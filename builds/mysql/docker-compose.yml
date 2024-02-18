@@ -1,0 +1,17 @@
+version: '2.1'
+
+services:
+  changeme-db:
+    image: mariadb
+    container_name: changeme-db
+    ports: 
+        - "33061:3306"
+    restart: always
+    environment:
+        MYSQL_DATABASE: changeme-db
+        MYSQL_USER: dev
+        MYSQL_PASSWORD: 123456
+        MYSQL_ROOT_PASSWORD: 123456
+    volumes:
+        # - ../../builds/mysql/dump:/docker-entrypoint-initdb.d
+        - ../../builds/mysql/.mariadb/mysql:/var/lib/mysql

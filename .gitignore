@@ -1,0 +1,22 @@
+.vscode/
+test/
+.output/
+
+.DS_Store
+*.log
+
+# local configs
+/configs/config.yaml
+.env
+
+# mysql
+/builds/mysql/.*
+/builds/redis/.*
+
+.devcontainers
+.devcontainer/commandhistory
+.devcontainer/docker-compose.yaml
+
+# TEST
+.testCoverage.txt
+unit.html

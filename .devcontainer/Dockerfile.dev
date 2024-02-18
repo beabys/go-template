@@ -1,0 +1,36 @@
+FROM golang:1.19.3-bullseye
+
+RUN apt-get update && apt-get install -y \
+    nano \
+    git \
+    curl \
+    openssh-server \
+    sudo
+    
+# Create new user dev with password dev
+RUN useradd -rm -d /home/dev -s /bin/bash -g root -G sudo -u 1000 dev 
+
+RUN echo 'dev:dev' | chpasswd
+RUN echo dev ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/dev \
+    && chmod 0440 /etc/sudoers.d/dev
+
+RUN echo "parse_git_branch() {" >> /home/dev/.bashrc && \
+    echo "     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \\(.*\\)/(\\\1)/'" >>/home/dev/.bashrc && \
+    echo "}" >> /home/dev/.bashrc && \
+    echo "export PS1=\"\\u@\\h \[\\\e[32m\\]\w \\[\\\e[91m\\]\\\$(parse_git_branch)\\[\\\e[00m\\]\$ \"" >> /home/dev/.bashrc && \
+    echo "source /usr/share/bash-completion/completions/git" >> /home/dev/.bashrc && \
+    echo "cd /go/src/gitlab.com/beabys/go-http-template" >>/home/dev/.bashrc
+
+
+# Persist bash history
+RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history"
+
+RUN mkdir /commandhistory
+RUN chown dev /commandhistory
+RUN chown dev /go/src
+
+RUN service ssh start
+RUN mkdir -p /var/run/sshd
+EXPOSE 22
+
+CMD /usr/sbin/sshd -D

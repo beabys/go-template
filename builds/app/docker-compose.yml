@@ -1,0 +1,13 @@
+version: '2.1'
+
+services:
+  changeme-app:
+    container_name: changeme-app
+    image: test-server
+    env_file:
+      - ../../.env
+    restart: always
+    ports:
+      - "${APPLICATION_PORT}:${APPLICATION_PORT}"
+    volumes:
+      - ../../configs:/etc/config/
