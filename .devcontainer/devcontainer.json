@@ -1,0 +1,37 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.187.0/containers/docker-existing-dockerfile
+{
+	"name": "btcfetch",
+    "workspaceFolder": "/go/src/gitlab.com/beabys/go-http-template",
+	"dockerComposeFile": "../.devcontainer/docker-compose.yaml",
+    "service": "btcfetch",
+	"context": "..",
+
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"go.toolsManagement.checkForUpdates": "local",
+		"go.gopath": "/go",
+		"go.useLanguageServer": true
+	},
+	
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		"golang.go",
+		"humao.rest-client",
+		"eamodio.gitlens",
+		"ms-azuretools.vscode-docker"
+	],
+
+	// Uncomment the next line to run commands after the container is created - for example installing curl.
+	"postCreateCommand": "go install github.com/vektra/mockery/v2@latest",
+
+	// Uncomment when using a ptrace-based debugger like C++, Go, and Rust
+	// "runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined" ],
+
+	"mounts": [
+		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+		"source=${localEnv:HOME}/.ssh,target=/root/.ssh,type=bind,consistency=cached",
+	  ],
+	// Uncomment to connect as a non-root user if you've added one. See https://aka.ms/vscode-remote/containers/non-root.
+	"remoteUser": "dev"
+}

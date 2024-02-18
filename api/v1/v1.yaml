@@ -1,0 +1,163 @@
+openapi: 3.0.1
+
+info:
+  title: Go template app
+  version: 1.0.0
+security:
+  - BearerAuth: []
+paths:
+  # Sale Order
+  /add:
+    post:
+      tags:
+        - add-item
+      summary: "Create new sale Orders from Cart"
+      description: "API Sale Order"
+      operationId: "CreateFromCart"
+      responses:
+        "200":
+          $ref: "#/components/responses/PostSaleOrdersRestResponse"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestError'
+  # /sale-orders/summary:
+  #   get:
+  #     tags:
+  #       - sale-orders
+  #     summary: "Get Sale Order Summary"
+  #     description: "API Sale Order Summary"
+  #     operationId: "GetSOSummary"
+  #     responses:
+  #       "200":
+  #         $ref: "#/components/responses/PostSaleOrdersRestResponse"
+  #       default:
+  #         description: Unexpected error
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/RestError'
+  # /sale-orders/{order_reference}:
+  #   post:
+  #     tags:
+  #       - sale-orders
+  #     summary: "update sale Orders adding documents/ updating status"
+  #     description: "API Sale Order"
+  #     operationId: "UpdateSaleOrder"
+  #     parameters:
+  #       - $ref: "#/components/parameters/OrderReference"
+  #     requestBody:
+  #       $ref: "#/components/requestBodies/UpdateSaleOrder"
+  #     responses:
+  #       "200":
+  #         $ref: "#/components/responses/PostUpdateSaleOrdersRestResponse"
+  #       default:
+  #         description: Unexpected error
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/RestError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    BidID:
+      name: bid_id
+      in: path
+      required: true
+      description: winner bid id
+      schema:
+        type: string
+    OrderReference:
+      name: order_reference
+      in: path
+      required: true
+      description: reference string of one order
+      schema:
+        type: string
+  requestBodies:
+    UpdateAddNote:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              note:
+                type: string
+              user_id:
+                type: integer
+                format: uint64
+    UpdateSaleOrder:
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              _method:
+                type: string
+              note:
+                type: string
+              incoterm_id:
+                type: integer
+                format: uint64
+              shipped_date:
+                type: string
+              collect_date:
+                type: string
+              sku_release_time:
+                type: string
+              shipping_method_id:
+                type: integer
+                format: uint64
+              tracking_code:
+                type: string
+              tracking_url:
+                type: string
+              courier_name:
+                type: string
+              doc_type_id:
+                type: integer
+                format: uint32
+              no_airbill:
+                type: integer
+                format: boolean
+                x-oapi-codegen-extra-tags:
+                  validate: "min=0,max=1"
+              payment_overdue:
+                type: integer
+                format: uint64
+                x-oapi-codegen-extra-tags:
+                  validate: "min=0,max=1"
+  responses:
+    Success:
+      description: Success Rest Response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Response"
+    Fail:
+      description: Fail Rest Response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Response"
+  schemas:
+    Response:
+      type: object
+      required:
+        - "success"
+        - "result"
+      optional:
+        - "error"
+      properties:
+        success:
+          type: boolean
+        result:
+          AnyValue: {}
+        error:
+          type: object
