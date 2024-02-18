@@ -3,7 +3,7 @@ stages:
 
 unit_tests:
   stage: test
-  image: golang:1.22-buster
+  image: golang:1.22.0-bullseye
   script:
     - make unit-coverage
   artifacts:
