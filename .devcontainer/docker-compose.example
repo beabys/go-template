@@ -1,0 +1,17 @@
+version: '2'
+
+services:
+    btcfetch:
+        build:
+            context: ./
+            dockerfile: Dockerfile.dev
+        ports:
+            - "3001:3001"
+        volumes:
+            - ../:/go/src/gitlab.com/beabys/go-http-template
+            - ../.devcontainer/commandhistory:/commandhistory
+            # - {path_of_your_.ssh_folder}:/home/dev/.ssh
+            # This help to persist your giconfigs (commit user, alias, email, etc)
+            # - {path_of_your_.gitconfig_file/.gitconfig}:/home/dev/.gitconfig
+        extra_hosts: 
+            - "host.docker.internal:host-gateway"
