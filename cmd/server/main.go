@@ -1,16 +1,24 @@
 package main
 
 import (
-	"time"
+	"context"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"gitlab.com/beabys/go-http-template/internal/app"
 	"gitlab.com/beabys/go-http-template/internal/app/config"
 )
 
 func main() {
-	// First we Set a new App
+
+	// First we Set a context and a stopFn
+	ctx, stopFn := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill, syscall.SIGTERM)
+	defer stopFn()
+
 	// New App
 	app := app.New()
+	app.StopFn = stopFn
 
 	// Setup configurations
 	config := config.New()
@@ -33,10 +41,9 @@ func main() {
 
 	// start mux server
 	// Server already has a Recovery middleware
-	go app.Router.Serve(config.App.Host, config.App.Port)
-
-	// Blocking until the shutdown is completed
-	<-app.ChanInterrupt
-	time.Sleep(time.Second * time.Duration(10))
-	app.Logger.Info("Shutdown Completed")
+	err = app.Run(ctx)
+	if err != nil {
+		app.Logger.Error("application stopped with error:", err.Error())
+	}
+	app.Logger.Info("application stopped")
 }

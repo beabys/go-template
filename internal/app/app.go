@@ -1,17 +1,24 @@
 package app
 
 import (
+	"context"
+	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"runtime/debug"
+	"time"
 
-	m "github.com/go-chi/chi/v5/middleware"
 	"github.com/sirupsen/logrus"
+	"gitlab.com/beabys/go-http-template/internal/api"
 	"gitlab.com/beabys/go-http-template/internal/app/config"
 	"gitlab.com/beabys/go-http-template/internal/app/database"
-	"gitlab.com/beabys/go-http-template/internal/app/utils"
+	"gitlab.com/beabys/go-http-template/internal/app/handler"
+	helloworld "gitlab.com/beabys/go-http-template/internal/hello_world"
 	"gitlab.com/beabys/go-http-template/pkg/router"
 	"gitlab.com/beabys/quetzal"
+	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
 )
 
 // New returns a new App struct
@@ -48,12 +55,40 @@ func (app *App) SetRedisClient(r *database.Redis) {
 	app.RedisClient = r
 }
 
-func (app *App) SetChanInterrupt(f chan interface{}) {
-	app.ChanInterrupt = f
-}
+func (app *App) Run(ctx context.Context) error {
+	errGrp, ctxGrp := errgroup.WithContext(ctx)
 
-func (app *App) Run() {
-	app.Logger.Info("let's Run")
+	httpServer, err := app.initHTTPServer(ctxGrp)
+	if err != nil {
+		newError := errors.New("failed to setup http server")
+		return errors.Join(newError, err)
+	}
+
+	errGrp.Go(func() error {
+		defer app.Logger.Info("http server stopped")
+
+		app.Logger.Info("http server started")
+		err = httpServer.ListenAndServe()
+		if err != nil && !errors.Is(http.ErrServerClosed, err) {
+			newError := errors.New("http server stopped with error")
+			return errors.Join(newError, err)
+		}
+		return nil
+	})
+
+	app.Logger.Info("app started")
+
+	<-ctxGrp.Done()
+	app.StopFn()
+	app.Logger.Info("shutting down gracefully start")
+
+	ctxTimeout, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err = httpServer.Shutdown(ctxTimeout); err != nil {
+		app.Logger.Error("error shutting server down", err)
+	}
+
+	return errGrp.Wait()
 }
 
 func (app *App) Setup(configs config.AppConfig) error {
@@ -71,14 +106,6 @@ func (app *App) Setup(configs config.AppConfig) error {
 	}
 	logger := quetzal.NewDefaultLogger(loggerConfigs)
 	app.SetLogger(logger)
-
-	// Set Mux Router
-	muxRouter := router.
-		NewDefaultRouter().
-		SetLogger(app.Logger)
-	muxRouter.SetDefaultMiddlewares()
-	muxRouter.Mux.Use(m.Logger)
-	app.SetMuxRouter(muxRouter)
 
 	// Mysql Client
 	mysqlConfig := &quetzal.MysqlConfig{
@@ -105,8 +132,28 @@ func (app *App) Setup(configs config.AppConfig) error {
 	redis := database.NewRedis(redisConfig)
 	app.SetRedisClient(redis)
 
-	app.SetChanInterrupt(utils.InterruptCh(logger, "Main"))
 	return nil
+}
+
+func (a *App) initHTTPServer(ctx context.Context) (*http.Server, error) {
+	// init service dependencies here
+
+	helloWorldService := helloworld.NewHelloWorld(a.Logger)
+
+	server := api.NewHttpServer().
+		SetConfig(a.Config.GetConfigs()).
+		SetLogger(a.Logger).
+		SetHelloWorldService(helloWorldService)
+
+	h := handler.NewMuxHandler(ctx, server)
+
+	a.Logger.Info("setup http server", zap.String("port", fmt.Sprintf("%v", 8080)))
+
+	return &http.Server{
+		Addr:              fmt.Sprintf("%s:%v", "", 8080),
+		Handler:           h,
+		ReadHeaderTimeout: time.Duration(30 * 1000),
+	}, nil
 }
 
 // Recoverer is a recover function that allow restart the service
