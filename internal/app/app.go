@@ -15,10 +15,8 @@ import (
 	"gitlab.com/beabys/go-http-template/internal/app/database"
 	"gitlab.com/beabys/go-http-template/internal/app/handler"
 	helloworld "gitlab.com/beabys/go-http-template/internal/hello_world"
-	"gitlab.com/beabys/go-http-template/pkg/router"
 	"gitlab.com/beabys/quetzal"
 	"go.uber.org/zap"
-	"golang.org/x/sync/errgroup"
 )
 
 // New returns a new App struct
@@ -43,10 +41,6 @@ func (app *App) GetLogger() quetzal.Logger {
 	return app.Logger
 }
 
-func (app *App) SetMuxRouter(m router.Router) {
-	app.Router = m
-}
-
 func (app *App) SetMysqlClient(m *database.Mysql) {
 	app.MysqlClient = m
 }
@@ -56,29 +50,18 @@ func (app *App) SetRedisClient(r *database.Redis) {
 }
 
 func (app *App) Run(ctx context.Context) error {
-	errGrp, ctxGrp := errgroup.WithContext(ctx)
-
-	httpServer, err := app.initHTTPServer(ctxGrp)
-	if err != nil {
-		newError := errors.New("failed to setup http server")
-		return errors.Join(newError, err)
-	}
-
-	errGrp.Go(func() error {
-		defer app.Logger.Info("http server stopped")
-
-		app.Logger.Info("http server started")
-		err = httpServer.ListenAndServe()
-		if err != nil && !errors.Is(http.ErrServerClosed, err) {
-			newError := errors.New("http server stopped with error")
-			return errors.Join(newError, err)
+	var err error = nil
+	httpServer := app.initHTTPServer(ctx)
+	go func() {
+		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			newError := errors.Join(errors.New("http server stopped with error"), err)
+			app.Logger.Fatal(newError)
 		}
-		return nil
-	})
+	}()
 
 	app.Logger.Info("app started")
 
-	<-ctxGrp.Done()
+	<-ctx.Done()
 	app.StopFn()
 	app.Logger.Info("shutting down gracefully start")
 
@@ -87,11 +70,11 @@ func (app *App) Run(ctx context.Context) error {
 	if err = httpServer.Shutdown(ctxTimeout); err != nil {
 		app.Logger.Error("error shutting server down", err)
 	}
-
-	return errGrp.Wait()
+	return err
 }
 
-func (app *App) Setup(configs config.AppConfig) error {
+func (app *App) Setup(configs config.AppConfig, stopFn context.CancelFunc) error {
+	app.StopFn = stopFn
 	err := app.SetConfigs(configs)
 	if err != nil {
 		return err
@@ -135,9 +118,8 @@ func (app *App) Setup(configs config.AppConfig) error {
 	return nil
 }
 
-func (a *App) initHTTPServer(ctx context.Context) (*http.Server, error) {
+func (a *App) initHTTPServer(ctx context.Context) *http.Server {
 	// init service dependencies here
-
 	helloWorldService := helloworld.NewHelloWorld(a.Logger)
 
 	server := api.NewHttpServer().
@@ -153,7 +135,7 @@ func (a *App) initHTTPServer(ctx context.Context) (*http.Server, error) {
 		Addr:              fmt.Sprintf("%s:%v", "", 8080),
 		Handler:           h,
 		ReadHeaderTimeout: time.Duration(30 * 1000),
-	}, nil
+	}
 }
 
 // Recoverer is a recover function that allow restart the service

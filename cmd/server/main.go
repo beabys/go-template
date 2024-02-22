@@ -18,11 +18,12 @@ func main() {
 
 	// New App
 	app := app.New()
-	app.StopFn = stopFn
 
 	// Setup configurations
 	config := config.New()
-	err := app.Setup(config)
+
+	//setup the app
+	err := app.Setup(config, stopFn)
 	if err != nil {
 		panic(err)
 	}

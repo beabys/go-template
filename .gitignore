@@ -1,6 +1,7 @@
 .vscode/
 test/
 .output/
+docs/
 
 .DS_Store
 *.log

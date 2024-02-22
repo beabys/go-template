@@ -13,7 +13,6 @@ require (
 	github.com/stretchr/testify v1.8.4
 	gitlab.com/beabys/quetzal v0.0.9
 	go.uber.org/zap v1.21.0
-	golang.org/x/sync v0.5.0
 	gotest.tools v2.2.0+incompatible
 )
 

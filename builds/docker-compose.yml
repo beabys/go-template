@@ -1,10 +1,10 @@
 version: '2.1'
 
 services:
-  changeme-app:
+  go-http-template:
     extends:
       file: app/docker-compose.yml
-      service: changeme-app
+      service: go-http-template
     env_file:
       - ../.env
     networks:
