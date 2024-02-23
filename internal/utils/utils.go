@@ -3,32 +3,9 @@ package utils
 import (
 	"fmt"
 	"math/rand"
-	"os"
-	"os/signal"
 	"strings"
-	"syscall"
 	"time"
-
-	"gitlab.com/beabys/quetzal"
 )
-
-// InterruptCh on system shut down sends a signal to the caller
-func InterruptCh(l quetzal.Logger, serviceName string) chan interface{} {
-	// signChan channel is used to transmit signal notifications.
-	signChan := make(chan os.Signal, 1)
-	// Catch and relay certain signal(s) to signChan channel.
-	signal.Notify(signChan, os.Interrupt, syscall.SIGTERM)
-
-	idleChan := make(chan interface{}, 1)
-	go func() {
-		sig := <-signChan
-		l.Info(fmt.Sprintf("[Shutdown] - %s shutdown: %v", serviceName, sig))
-		idleChan <- sig
-		close(idleChan)
-	}()
-
-	return idleChan
-}
 
 // FindInSlice function to find string inside one slice
 // if it's success will return true

@@ -6,7 +6,6 @@ import (
 
 	"gitlab.com/beabys/go-http-template/internal/app/config"
 	mocks "gitlab.com/beabys/go-http-template/internal/mocks/app/config"
-	"gitlab.com/beabys/go-http-template/pkg/router"
 	"gitlab.com/beabys/quetzal"
 
 	"github.com/stretchr/testify/assert"
@@ -43,19 +42,11 @@ func TestApp(t *testing.T) {
 		assert.Equal(t, app.GetLogger(), logger)
 
 	})
-
-	t.Run("test Set Mux", func(t *testing.T) {
-		app := New()
-		mux := router.NewDefaultRouter()
-		app.SetMuxRouter(mux)
-		assert.Equal(t, app.Router, mux)
-	})
-
 	t.Run("test fail Setup", func(t *testing.T) {
 		app := New()
 		mockConfig := mocks.NewAppConfig(t)
 		mockConfig.On("LoadConfigs").Return(fmt.Errorf("make it fail"))
-		assert.ErrorContains(t, app.Setup(mockConfig), "make it fail")
+		assert.ErrorContains(t, app.Setup(mockConfig, nil), "make it fail")
 	})
 
 	t.Run("test Success Setup", func(t *testing.T) {
@@ -63,7 +54,7 @@ func TestApp(t *testing.T) {
 		mockConfig := mocks.NewAppConfig(t)
 		mockConfig.On("LoadConfigs").Return(nil)
 		mockConfig.On("GetConfigs").Return(&config.Config{})
-		assert.NoError(t, app.Setup(mockConfig))
+		assert.NoError(t, app.Setup(mockConfig, nil))
 	})
 }
 
