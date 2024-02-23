@@ -1,7 +1,7 @@
 version: '2'
 
 services:
-    btcfetch:
+    go-http-template:
         build:
             context: ./
             dockerfile: Dockerfile.dev

@@ -1,10 +1,10 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.187.0/containers/docker-existing-dockerfile
 {
-	"name": "btcfetch",
+	"name": "go-http-template",
     "workspaceFolder": "/go/src/gitlab.com/beabys/go-http-template",
 	"dockerComposeFile": "../.devcontainer/docker-compose.yaml",
-    "service": "btcfetch",
+    "service": "go-http-template",
 	"context": "..",
 
 	// Set *default* container specific settings.json values on container create.
@@ -23,7 +23,7 @@
 	],
 
 	// Uncomment the next line to run commands after the container is created - for example installing curl.
-	"postCreateCommand": "go install github.com/vektra/mockery/v2@latest",
+	"postCreateCommand": "go install github.com/vektra/mockery/v2@latest && go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@latest",
 
 	// Uncomment when using a ptrace-based debugger like C++, Go, and Rust
 	// "runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined" ],

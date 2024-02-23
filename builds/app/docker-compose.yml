@@ -1,8 +1,8 @@
 version: '2.1'
 
 services:
-  changeme-app:
-    container_name: changeme-app
+  go-http-template:
+    container_name: go-http-template
     image: test-server
     env_file:
       - ../../.env

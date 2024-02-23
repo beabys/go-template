@@ -3,7 +3,12 @@
 package mocks
 
 import (
+	context "context"
+
+	config "gitlab.com/beabys/go-http-template/internal/app/config"
+
 	mock "github.com/stretchr/testify/mock"
+
 	quetzal "gitlab.com/beabys/quetzal"
 )
 
@@ -17,9 +22,22 @@ func (_m *Application) Recoverer(_a0 func()) {
 	_m.Called(_a0)
 }
 
-// Run provides a mock function with given fields:
-func (_m *Application) Run() {
-	_m.Called()
+// Run provides a mock function with given fields: _a0
+func (_m *Application) Run(_a0 context.Context) error {
+	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Run")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context) error); ok {
+		r0 = rf(_a0)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // SetLogger provides a mock function with given fields: _a0
@@ -27,17 +45,17 @@ func (_m *Application) SetLogger(_a0 quetzal.Logger) {
 	_m.Called(_a0)
 }
 
-// Setup provides a mock function with given fields:
-func (_m *Application) Setup() error {
-	ret := _m.Called()
+// Setup provides a mock function with given fields: _a0, _a1
+func (_m *Application) Setup(_a0 config.AppConfig, _a1 context.CancelFunc) error {
+	ret := _m.Called(_a0, _a1)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Setup")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func() error); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(config.AppConfig, context.CancelFunc) error); ok {
+		r0 = rf(_a0, _a1)
 	} else {
 		r0 = ret.Error(0)
 	}

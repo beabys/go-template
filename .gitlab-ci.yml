@@ -1,5 +1,6 @@
 stages:
   - test
+  - docs
 
 unit_tests:
   stage: test
@@ -10,3 +11,13 @@ unit_tests:
     expire_in: 1 day
     paths:
       - unit.html
+
+docs:
+  stage: docs
+  image: node:hydrogen-slim
+  script:
+    - mkdir -p ./docs && npm i -g @redocly/cli@latest && redocly build-docs -o ./docs/index.html ./api/v1/v1.yaml
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - docs/index.html
