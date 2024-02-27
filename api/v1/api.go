@@ -26,8 +26,8 @@ const (
 
 // Response defines model for Response.
 type Response struct {
-	Error  *map[string]interface{} `json:"error,omitempty"`
-	Result *interface{}            `json:"result,omitempty"`
+	Data    map[string]interface{} `json:"data"`
+	Success bool                   `json:"success"`
 }
 
 // Fail defines model for Fail.
@@ -203,6 +203,8 @@ type HelloWorldResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *Success
+	JSON400      *Fail
+	JSON404      *Fail
 	JSONDefault  *Fail
 }
 
@@ -251,6 +253,20 @@ func ParseHelloWorldResponse(rsp *http.Response) (*HelloWorldResponse, error) {
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Fail
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Fail
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest Fail
@@ -430,13 +446,13 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/7ySQY/UMAyF/0pkOJZpF265LQcWrosEh9EcTOrZZpUmwXaAUdX/jpJ2d8VIcOQ0mdj+",
-	"/N5rFnBpzilSVAG7AJPkFIXanw/oQ/11KSpFrUfMOXiH6lPsHyXFeiduohnr6TXTGSy86l+g/VaV/n4n",
-	"w7quHYwkjn2uHLBtkbknUfPS1cHn4hyJ/BcF+65rEWu3s5uK53u7QGqTGMAegZgTw6mDzCkTq9/i267t",
-	"AnrJBBbSt0dyWp0xSQnNzW28fMFQKrKpYvpePNNYsSMqVurVeG3z8Zwa2WuotbtklOYcUMlgztDBD2LZ",
-	"rN0chsNQt6ZMEbMHC+8Ow+EGOsioU5PaTxRCIz6QbvaIW8afRrDwsVa/Jg4jdH8+kbfD8LfYn/v6pw/Z",
-	"Uj/jbv3fM+3ttfzLPCNfnlT8rCqMF4NmZ5k7UjOTTmk0RWg0KIZ+4ZwDQQeKD1LDbAbftGk4tQyFXGGv",
-	"F7DHBd4TMvFt0Qns8bSe1t8BAAD//1umzIoZAwAA",
+	"H4sIAAAAAAAC/7ySwY4TMQyGXyUyHENnFvaUGxxYuC4HDlUP3oy7k1UmCbEHqKp5dxR3thWVkHriNJn4",
+	"92f/do7g81RyoiQM7giVuOTEpD+fMcT29TkJJWlHLCUGjxJy6l44p3bHfqQJ2+ltpT04eNNdoN0pyt3j",
+	"SoZlWSwMxL6G0jjgtJB5JBZzUVn4NntPzP+lg7XWdROLXdnaxfneHaHUXKhKOE1qQNHycigEDvLTC3lp",
+	"HvjiYY095RwJk7Ir/ZhDpQHc9qy0J9jOXsNaQkj7rKwgscUeshGaSkQhg6WAhZ9U+WTpbtNv+tZDLpSw",
+	"BHDwYdNv7sBCQRm1p26kGJX4TDrdZkpn+3UAB19a9HuucQD799N43/f/GvdZ170ucLFwf4te35uK728X",
+	"D7THOcqtCbqTacJ6ePX3q/kzgQ2alWUeSMxEMubBzEyDQTb0G6cSCSwIPnNbmI7unWbDTrfD5Oca5ABu",
+	"e4RPhJXqx1lGcNvdslv+BAAA//8Q/oIfawMAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

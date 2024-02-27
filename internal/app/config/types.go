@@ -9,16 +9,17 @@ type AppConfig interface {
 
 // Config is a struct define configuration for the app
 type Config struct {
-	Stage string            `mapstructure:"stage"`
-	App   ApplicationConfig `mapstructure:"application"`
-	DB    Database          `mapstructure:"db"`
-	Redis Redis             `mapstructure:"redis"`
+	Stage string   `mapstructure:"stage"`
+	Http  Http     `mapstructure:"http"`
+	DB    Database `mapstructure:"db"`
+	Redis Redis    `mapstructure:"redis"`
 }
 
-// ApplicationConfig is a struct to define configurations for the app
-type ApplicationConfig struct {
-	Host string `mapstructure:"host"`
-	Port int    `mapstructure:"port"`
+// Http is a struct to define configurations for the http Server
+type Http struct {
+	Host      string `mapstructure:"host"`
+	Port      int    `mapstructure:"port"`
+	ApiPrefix string `mapstructure:"api_prefix"`
 }
 
 // MysqlConfigurations is a struct to define configurations of the db connection

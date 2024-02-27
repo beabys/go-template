@@ -8,26 +8,26 @@ services:
     env_file:
       - ../.env
     networks:
-      - changeme-service
+      - go-http-template-service
     depends_on: 
-      - changeme-db
-  changeme-db:
+      - go-http-template-db
+  go-http-template-db:
     extends:
       file: mysql/docker-compose.yml
-      service: changeme-db
+      service: go-http-template-db
     volumes:
         # - ../builds/mysql/dump:/docker-entrypoint-initdb.d
         - ../builds/mysql/.mariadb:/var/lib/mysql
     networks:
-      - changeme-service
-  changeme-redis:
+      - go-http-template-service
+  go-http-template-redis:
     extends:
       file: redis/docker-compose.yml
-      service: changeme-redis
+      service: go-http-template-redis
     volumes:
       - ../builds/redis/.redis:/data/
     networks:
-      - changeme-service
+      - go-http-template-service
 networks:
-  changeme-service:
+  go-http-template-service:
     driver: bridge

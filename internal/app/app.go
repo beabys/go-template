@@ -16,7 +16,6 @@ import (
 	"gitlab.com/beabys/go-http-template/internal/app/handler"
 	helloworld "gitlab.com/beabys/go-http-template/internal/hello_world"
 	"gitlab.com/beabys/quetzal"
-	"go.uber.org/zap"
 )
 
 // New returns a new App struct
@@ -122,17 +121,20 @@ func (a *App) initHTTPServer(ctx context.Context) *http.Server {
 	// init service dependencies here
 	helloWorldService := helloworld.NewHelloWorld(a.Logger)
 
+	configs := a.Config.GetConfigs()
 	server := api.NewHttpServer().
-		SetConfig(a.Config.GetConfigs()).
+		SetConfig(configs).
 		SetLogger(a.Logger).
 		SetHelloWorldService(helloWorldService)
 
 	h := handler.NewMuxHandler(ctx, server)
 
-	a.Logger.Info("setup http server", zap.String("port", fmt.Sprintf("%v", 8080)))
+	address := fmt.Sprintf("%s:%v", configs.Http.Host, configs.Http.Port)
+
+	a.Logger.Info("setup http server", address)
 
 	return &http.Server{
-		Addr:              fmt.Sprintf("%s:%v", "", 8080),
+		Addr:              address,
 		Handler:           h,
 		ReadHeaderTimeout: time.Duration(30 * 1000),
 	}

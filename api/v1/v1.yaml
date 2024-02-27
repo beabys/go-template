@@ -15,6 +15,12 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/Success"
+        "400":
+          description: Bad Request
+          $ref: "#/components/responses/Fail"
+        "404":
+          description: Not Found
+          $ref: "#/components/responses/Fail"
         default:
           description: Unexpected error
           $ref: "#/components/responses/Fail"
@@ -36,11 +42,10 @@ components:
     Response:
       type: object
       required:
+        - "success"
         - "data"
-      optional:
-        - "error"
       properties:
-        result:
-          AnyValue: {}
-        error:
+        success:
+          type: boolean
+        data:
           type: object
