@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"strings"
@@ -36,4 +37,8 @@ func RandomInteger(min, max int) (int, error) {
 	}
 	rand.New(rand.NewSource(time.Now().UnixNano()))
 	return rand.Intn(max-min+1) + min, nil
+}
+
+func BindError(toBind, err error) error {
+	return errors.Join(toBind, err)
 }

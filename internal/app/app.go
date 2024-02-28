@@ -15,6 +15,7 @@ import (
 	"gitlab.com/beabys/go-http-template/internal/app/database"
 	"gitlab.com/beabys/go-http-template/internal/app/handler"
 	helloworld "gitlab.com/beabys/go-http-template/internal/hello_world"
+	"gitlab.com/beabys/go-http-template/internal/utils"
 	"gitlab.com/beabys/quetzal"
 )
 
@@ -53,8 +54,8 @@ func (app *App) Run(ctx context.Context) error {
 	httpServer := app.initHTTPServer(ctx)
 	go func() {
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			newError := errors.Join(errors.New("http server stopped with error"), err)
-			app.Logger.Fatal(newError)
+			err = utils.BindError(errors.New("http server stopped with error"), err)
+			app.Logger.Fatal(err)
 		}
 	}()
 

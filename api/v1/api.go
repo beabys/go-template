@@ -30,11 +30,17 @@ type Response struct {
 	Success bool                   `json:"success"`
 }
 
-// Fail defines model for Fail.
-type Fail = Response
+// BadRequestResponse defines model for BadRequestResponse.
+type BadRequestResponse = Response
 
-// Success defines model for Success.
-type Success = Response
+// InternalErrorResponse defines model for InternalErrorResponse.
+type InternalErrorResponse = Response
+
+// NotFoundResponse defines model for NotFoundResponse.
+type NotFoundResponse = Response
+
+// SuccessResponse defines model for SuccessResponse.
+type SuccessResponse = Response
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -202,10 +208,10 @@ type ClientWithResponsesInterface interface {
 type HelloWorldResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Success
-	JSON400      *Fail
-	JSON404      *Fail
-	JSONDefault  *Fail
+	JSON200      *SuccessResponse
+	JSON400      *BadRequestResponse
+	JSON404      *NotFoundResponse
+	JSONDefault  *InternalErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -248,28 +254,28 @@ func ParseHelloWorldResponse(rsp *http.Response) (*HelloWorldResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Success
+		var dest SuccessResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest Fail
+		var dest BadRequestResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON400 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
-		var dest Fail
+		var dest NotFoundResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest Fail
+		var dest InternalErrorResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -446,13 +452,15 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/7ySwY4TMQyGXyUyHENnFvaUGxxYuC4HDlUP3oy7k1UmCbEHqKp5dxR3thWVkHriNJn4",
-	"92f/do7g81RyoiQM7giVuOTEpD+fMcT29TkJJWlHLCUGjxJy6l44p3bHfqQJ2+ltpT04eNNdoN0pyt3j",
-	"SoZlWSwMxL6G0jjgtJB5JBZzUVn4NntPzP+lg7XWdROLXdnaxfneHaHUXKhKOE1qQNHycigEDvLTC3lp",
-	"HvjiYY095RwJk7Ir/ZhDpQHc9qy0J9jOXsNaQkj7rKwgscUeshGaSkQhg6WAhZ9U+WTpbtNv+tZDLpSw",
-	"BHDwYdNv7sBCQRm1p26kGJX4TDrdZkpn+3UAB19a9HuucQD799N43/f/GvdZ170ucLFwf4te35uK728X",
-	"D7THOcqtCbqTacJ6ePX3q/kzgQ2alWUeSMxEMubBzEyDQTb0G6cSCSwIPnNbmI7unWbDTrfD5Oca5ABu",
-	"e4RPhJXqx1lGcNvdslv+BAAA//8Q/oIfawMAAA==",
+	"H4sIAAAAAAAC/7RUPW8bMQz9KwLb8epz2kzaGqBJs2Rwhg6GB+aOjhXoRJXipTWM+++FdP6o3RQpUGez",
+	"Kb537z2K2kDDXeRAQRPYDQilyCFR+XOF7Yy+95R0ti3nasNBKWj+iTF616A6DvVT4pBr9BO76Etni4ql",
+	"JMICNvMZGQlhqCD1TUMpgV2iT5QLzYq6gngvtAQL7+qDuno8TfVeyzAMFbSUGnExS9h+YXb4wm1QkoD+",
+	"SxZwHg87SnNP8kxiCvUbublG582MkppDVwV3rNfch/Y8fgKrWWa6N/Jwx2qud/z3I///KV+R9wwWvrH4",
+	"Y9Uq/XlEb3WeZr/nLtvxu4soHEnUjXuzU6rrSGCBH56oOb7x+7MHZk8YCndeDSfUgp3vO6uRbFGdkmWA",
+	"C0suXE5zRHDDRqmLHpUMxggVPJOk0dLFZDqZZg0cKWB0YOHTZDq5gAoi6qpoqrfRbuCRykSyqTKP2xYs",
+	"fM2nY+rV8UPxcTr9W9z7vvp0+EMFl/+Ce+EVKtDL16F/rEqZ9BJ7r6+DX348yiXouw5lvYvkR47EuGTQ",
+	"bMnNDanpSFfcmj5RazCZ3U2uQPEx5RmXtD8UNCzKQBM1vThdg51v4IpQSD73ugI7XwyL4VcAAAD///ue",
+	"dY2sBQAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

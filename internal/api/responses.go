@@ -18,7 +18,7 @@ func ErrorResponseJSON(w http.ResponseWriter, statusCode int, err error) {
 	data := map[string]interface{}{
 		"error": err.Error(),
 	}
-	ResponseJSON(w, false, statusCode, data)
+	ResponseJSON(w, false, http.StatusOK, data)
 }
 
 // ResponseJSON return a response with status code

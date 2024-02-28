@@ -14,30 +14,58 @@ paths:
       operationId: "HelloWorld"
       responses:
         "200":
-          $ref: "#/components/responses/Success"
+          $ref: "#/components/responses/SuccessResponse"
         "400":
           description: Bad Request
-          $ref: "#/components/responses/Fail"
+          $ref: "#/components/responses/BadRequestResponse"
         "404":
           description: Not Found
-          $ref: "#/components/responses/Fail"
+          $ref: "#/components/responses/NotFoundResponse"
         default:
           description: Unexpected error
-          $ref: "#/components/responses/Fail"
+          $ref: "#/components/responses/InternalErrorResponse"
 components:
   responses:
-    Success:
+    SuccessResponse:
       description: Success Rest Response
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Response"
-    Fail:
+          example:   # Sample object
+              success: true
+              data: 
+                hello: World
+    BadRequestResponse:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Response"
+          example:   # Sample object
+              success: false
+              data: 
+                error: Bad request
+    NotFoundResponse:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Response"
+          example:   # Sample object
+              success: false
+              data: 
+                error: not found
+    InternalErrorResponse:
       description: Fail Rest Response
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Response"
+          example:   # Sample object
+              success: false
+              data: 
+                error: Internal Server Error
   schemas:
     Response:
       type: object
