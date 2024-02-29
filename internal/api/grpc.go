@@ -33,7 +33,7 @@ func (gs *GRPCServer) SetHelloWorldService(hw helloworld.HelloWorldIntereface) *
 	return gs
 }
 
-// Run implements Run apoi server function for Htt server
+// Run implements Run api server function for gRPC server
 func (gs *GRPCServer) Run(ctx context.Context, cancelFn context.CancelFunc) error {
 	go func() {
 		if err := gs.Server.Serve(gs.Listener); err != nil {

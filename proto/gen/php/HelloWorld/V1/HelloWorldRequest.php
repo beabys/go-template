@@ -9,14 +9,14 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Generated from protobuf message <code>hello_world.v1.HelloWorldResponse</code>
+ * Generated from protobuf message <code>hello_world.v1.HelloWorldRequest</code>
  */
-class HelloWorldResponse extends \Google\Protobuf\Internal\Message
+class HelloWorldRequest extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Generated from protobuf field <code>string hello = 1 [json_name = "hello"];</code>
+     * Generated from protobuf field <code>string name = 1 [json_name = "name"];</code>
      */
-    protected $hello = '';
+    protected $name = '';
 
     /**
      * Constructor.
@@ -24,7 +24,7 @@ class HelloWorldResponse extends \Google\Protobuf\Internal\Message
      * @param array $data {
      *     Optional. Data for populating the Message object.
      *
-     *     @type string $hello
+     *     @type string $name
      * }
      */
     public function __construct($data = NULL) {
@@ -33,23 +33,23 @@ class HelloWorldResponse extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string hello = 1 [json_name = "hello"];</code>
+     * Generated from protobuf field <code>string name = 1 [json_name = "name"];</code>
      * @return string
      */
-    public function getHello()
+    public function getName()
     {
-        return $this->hello;
+        return $this->name;
     }
 
     /**
-     * Generated from protobuf field <code>string hello = 1 [json_name = "hello"];</code>
+     * Generated from protobuf field <code>string name = 1 [json_name = "name"];</code>
      * @param string $var
      * @return $this
      */
-    public function setHello($var)
+    public function setName($var)
     {
         GPBUtil::checkString($var, True);
-        $this->hello = $var;
+        $this->name = $var;
 
         return $this;
     }

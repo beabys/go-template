@@ -158,7 +158,7 @@ func (a *App) SetGRPCServer() error {
 		a.Logger.Error(err)
 		return err
 	})
-	// get logger and create new entry for grpcLogger``
+	// get logger and create new entry for grpcLogger
 	logrusLogger := a.Logger.GetLogger().(*logrus.Logger)
 	grpcLogger := logrus.NewEntry(logrusLogger)
 

@@ -9,11 +9,11 @@ import (
 
 type Logger interface {
 	GetLogger() any
-	Debug(...interface{})
-	Info(...interface{})
-	Warn(...interface{})
-	Error(...interface{})
-	Fatal(...interface{})
+	Debug(...any)
+	Info(...any)
+	Warn(...any)
+	Error(...any)
+	Fatal(...any)
 }
 
 type DefaultLogger struct {
@@ -47,23 +47,23 @@ func (l *DefaultLogger) GetLogger() any {
 	return l.log
 }
 
-func (l *DefaultLogger) Debug(v ...interface{}) {
+func (l *DefaultLogger) Debug(v ...any) {
 	l.log.Debug(v...)
 }
 
-func (l *DefaultLogger) Info(v ...interface{}) {
+func (l *DefaultLogger) Info(v ...any) {
 	l.log.Info(v...)
 }
 
-func (l *DefaultLogger) Warn(v ...interface{}) {
+func (l *DefaultLogger) Warn(v ...any) {
 	l.log.Warn(v...)
 }
 
-func (l *DefaultLogger) Error(v ...interface{}) {
+func (l *DefaultLogger) Error(v ...any) {
 	l.log.Error(v...)
 }
 
-func (l *DefaultLogger) Fatal(v ...interface{}) {
+func (l *DefaultLogger) Fatal(v ...any) {
 	l.log.Fatal(v...)
 }
 

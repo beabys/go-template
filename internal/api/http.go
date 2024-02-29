@@ -35,7 +35,7 @@ func (hs *HttpServer) SetHelloWorldService(hw helloworld.HelloWorldIntereface) *
 	return hs
 }
 
-// Run implements Run apoi server function for Htt server
+// Run implements Run api server function for Http server
 func (hs *HttpServer) Run(ctx context.Context, cancelFn context.CancelFunc) error {
 	var err error = nil
 	go func() {

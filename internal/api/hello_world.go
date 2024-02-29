@@ -4,8 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"google.golang.org/protobuf/types/known/emptypb"
-
 	hwproto "gitlab.com/beabys/go-http-template/proto/gen/go/hello_world/v1"
 )
 
@@ -15,15 +13,28 @@ import (
 
 // HelloWorld implements the method Hello World
 func (hs *HttpServer) HelloWorld(w http.ResponseWriter, r *http.Request) {
-	hs.HelloWorldSvc.GetHelloWorld(r)
-	SuccessResponseJSON(w, nil)
+	hello, err := hs.HelloWorldSvc.GetHelloWorld(r.Context())
+	if err != nil {
+		hs.Logger.Error(err)
+		ErrorResponseJSON(w, http.StatusInternalServerError, err)
+		return
+	}
+	data := map[string]interface{}{
+		"hello": hello.Hello,
+	}
+	SuccessResponseJSON(w, data)
 }
 
 // from grpc
 
 // GetHelloWorld implements the method Get Hello World
-func (hg *GRPCServer) GetHelloWorld(_ context.Context, _ *emptypb.Empty) (*hwproto.HelloWorldResponse, error) {
+func (hg *GRPCServer) GetHelloWorld(ctx context.Context, _ *hwproto.HelloWorldRequest) (*hwproto.HelloWorldResponse, error) {
+	hello, err := hg.HelloWorldSvc.GetHelloWorld(ctx)
+	if err != nil {
+		hg.Logger.Error(err)
+		return nil, err
+	}
 	return &hwproto.HelloWorldResponse{
-		Data: "Hello World",
+		Hello: hello.Hello,
 	}, nil
 }

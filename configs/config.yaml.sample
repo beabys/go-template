@@ -1,6 +1,10 @@
 stage: development
-application:
-    port: 80
+grpc:
+    port: 5001
+http:
+    host: 127.0.0.1
+    port: 3001
+    api_prefix: "/v1"
 db:
     user: ${DB_USER}
     password: ${DB_PWD}
@@ -16,7 +20,3 @@ redis:
     host: ${REDIS_HOST}
     port: ${REDIS_PORT}
     database: ${REDIS_DB}
-fetcher:
-    job_enabled: false
-    apikey: 
-    minutes_interval: 1

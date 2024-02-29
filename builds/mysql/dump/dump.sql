@@ -1,4 +1,4 @@
 -- create the table for each database
--- USE `application-db`;
+-- USE `go-http-template`;
 
 

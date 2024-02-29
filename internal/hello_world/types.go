@@ -1,13 +1,14 @@
 package helloworld
 
 import (
-	"net/http"
+	"context"
 
+	"gitlab.com/beabys/go-http-template/internal/domain/models"
 	"gitlab.com/beabys/go-http-template/pkg/logger"
 )
 
 type HelloWorldIntereface interface {
-	GetHelloWorld(r *http.Request) error
+	GetHelloWorld(context.Context) (*models.HelloWorld, error)
 }
 
 type HelloWorld struct {
