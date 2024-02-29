@@ -43,14 +43,13 @@ func main() {
 	// Setup the http Server
 	app.SetHTTPServer()
 
-	// Setup the GRPC Server
+	// // Setup the GRPC Server
 	// err = app.SetGRPCServer()
 	// if err != nil {
 	// 	app.Logger.Fatal(err)
 	// }
 
-	// start mux server
-	// Server already has a Recovery middleware
+	// run the server
 	err = app.Run(ctx)
 	if err != nil {
 		app.Logger.Error("application stopped with error:", err.Error())

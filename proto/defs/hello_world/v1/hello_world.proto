@@ -2,6 +2,10 @@ syntax = "proto3";
 
 package hello_world.v1;
 
+message HelloWorldRequest {
+    string name = 1;
+}
+
 message HelloWorldResponse {
-    string data = 1;
+    string hello = 1;
 }

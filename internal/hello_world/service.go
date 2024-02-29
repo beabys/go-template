@@ -1,8 +1,9 @@
 package helloworld
 
 import (
-	"net/http"
+	"context"
 
+	"gitlab.com/beabys/go-http-template/internal/domain/models"
 	"gitlab.com/beabys/go-http-template/pkg/logger"
 )
 
@@ -12,7 +13,9 @@ func NewHelloWorld(logger logger.Logger) *HelloWorld {
 	}
 }
 
-func (hw *HelloWorld) GetHelloWorld(_ *http.Request) error {
+func (hw *HelloWorld) GetHelloWorld(_ context.Context) (*models.HelloWorld, error) {
 	hw.logger.Info("logging the Hello World get Method")
-	return nil
+	return &models.HelloWorld{
+		Hello: "world",
+	}, nil
 }

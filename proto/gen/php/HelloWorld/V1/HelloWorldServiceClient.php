@@ -17,12 +17,12 @@ class HelloWorldServiceClient extends \Grpc\BaseStub {
     }
 
     /**
-     * @param \Google\Protobuf\GPBEmpty $argument input argument
+     * @param \HelloWorld\V1\HelloWorldRequest $argument input argument
      * @param array $metadata metadata
      * @param array $options call options
      * @return \Grpc\UnaryCall
      */
-    public function GetHelloWorld(\Google\Protobuf\GPBEmpty $argument,
+    public function GetHelloWorld(\HelloWorld\V1\HelloWorldRequest $argument,
       $metadata = [], $options = []) {
         return $this->_simpleRequest('/hello_world.v1.HelloWorldService/GetHelloWorld',
         $argument,
