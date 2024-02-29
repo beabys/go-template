@@ -3,7 +3,7 @@ package helloworld
 import (
 	"net/http"
 
-	"gitlab.com/beabys/quetzal"
+	"gitlab.com/beabys/go-http-template/pkg/logger"
 )
 
 type HelloWorldIntereface interface {
@@ -11,5 +11,5 @@ type HelloWorldIntereface interface {
 }
 
 type HelloWorld struct {
-	logger quetzal.Logger
+	logger logger.Logger
 }

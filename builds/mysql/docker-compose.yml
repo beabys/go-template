@@ -1,14 +1,14 @@
 version: '2.1'
 
 services:
-  changeme-db:
+  go-http-template-db:
     image: mariadb
-    container_name: changeme-db
+    container_name: go-http-template-db
     ports: 
         - "33061:3306"
     restart: always
     environment:
-        MYSQL_DATABASE: changeme-db
+        MYSQL_DATABASE: go-http-template-db
         MYSQL_USER: dev
         MYSQL_PASSWORD: 123456
         MYSQL_ROOT_PASSWORD: 123456

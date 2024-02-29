@@ -3,13 +3,14 @@ package app
 import (
 	"context"
 
+	"gitlab.com/beabys/go-http-template/internal/api"
 	"gitlab.com/beabys/go-http-template/internal/app/config"
 	"gitlab.com/beabys/go-http-template/internal/app/database"
-	"gitlab.com/beabys/quetzal"
+	"gitlab.com/beabys/go-http-template/pkg/logger"
 )
 
 type Application interface {
-	SetLogger(quetzal.Logger)
+	SetLogger(logger.Logger)
 	Run(context.Context) error
 	Setup(config.AppConfig, context.CancelFunc) error
 	Recoverer(func())
@@ -18,8 +19,9 @@ type Application interface {
 // App is the Application Struct
 type App struct {
 	Config      config.AppConfig
-	Logger      quetzal.Logger
+	Logger      logger.Logger
 	StopFn      context.CancelFunc
 	MysqlClient *database.Mysql
 	RedisClient *database.Redis
+	ApiServer   api.ApiServer
 }
