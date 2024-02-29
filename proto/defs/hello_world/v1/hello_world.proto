@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package hello_world.v1;
+
+message HelloWorldResponse {
+    string data = 1;
+}

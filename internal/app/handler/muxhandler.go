@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"errors"
 	"net/http"
 
@@ -13,7 +12,7 @@ import (
 	"gitlab.com/beabys/go-http-template/internal/api"
 )
 
-func NewMuxHandler(ctx context.Context, server *api.HttpServer) http.Handler {
+func NewMuxHandler(server *api.HttpServer) http.Handler {
 	httpConfigs := server.Config.Http
 	r := chi.NewRouter() // http.Handler
 

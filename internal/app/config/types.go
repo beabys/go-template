@@ -11,8 +11,14 @@ type AppConfig interface {
 type Config struct {
 	Stage string   `mapstructure:"stage"`
 	Http  Http     `mapstructure:"http"`
+	Grpc  Grpc     `mapstructure:"grpc"`
 	DB    Database `mapstructure:"db"`
 	Redis Redis    `mapstructure:"redis"`
+}
+
+// Grpc is a struct to define configurations for the gRPC Server
+type Grpc struct {
+	Port int `mapstructure:"port"`
 }
 
 // Http is a struct to define configurations for the http Server

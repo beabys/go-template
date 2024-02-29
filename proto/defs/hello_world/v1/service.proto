@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package hello_world.v1;
+
+import "google/protobuf/empty.proto";
+import "hello_world/v1/hello_world.proto";
+
+service HelloWorldService {
+    rpc GetHelloWorld (google.protobuf.Empty) returns (HelloWorldResponse) {}
+}

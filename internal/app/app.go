@@ -4,11 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"runtime/debug"
+	"strconv"
 	"time"
 
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/beabys/go-http-template/internal/api"
 	"gitlab.com/beabys/go-http-template/internal/app/config"
@@ -16,7 +23,13 @@ import (
 	"gitlab.com/beabys/go-http-template/internal/app/handler"
 	helloworld "gitlab.com/beabys/go-http-template/internal/hello_world"
 	"gitlab.com/beabys/go-http-template/internal/utils"
+	"gitlab.com/beabys/go-http-template/pkg/logger"
 	"gitlab.com/beabys/quetzal"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/keepalive"
+	"google.golang.org/grpc/reflection"
+
+	hwproto "gitlab.com/beabys/go-http-template/proto/gen/go/hello_world/v1"
 )
 
 // New returns a new App struct
@@ -33,11 +46,11 @@ func (app *App) SetConfigs(AppConfig config.AppConfig) error {
 	return nil
 }
 
-func (app *App) SetLogger(logger quetzal.Logger) {
+func (app *App) SetLogger(logger logger.Logger) {
 	app.Logger = logger
 }
 
-func (app *App) GetLogger() quetzal.Logger {
+func (app *App) GetLogger() logger.Logger {
 	return app.Logger
 }
 
@@ -50,27 +63,7 @@ func (app *App) SetRedisClient(r *database.Redis) {
 }
 
 func (app *App) Run(ctx context.Context) error {
-	var err error = nil
-	httpServer := app.initHTTPServer(ctx)
-	go func() {
-		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			err = utils.BindError(errors.New("http server stopped with error"), err)
-			app.Logger.Fatal(err)
-		}
-	}()
-
-	app.Logger.Info("app started")
-
-	<-ctx.Done()
-	app.StopFn()
-	app.Logger.Info("shutting down gracefully start")
-
-	ctxTimeout, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err = httpServer.Shutdown(ctxTimeout); err != nil {
-		app.Logger.Error("error shutting server down", err)
-	}
-	return err
+	return app.ApiServer.Run(ctx, app.StopFn)
 }
 
 func (app *App) Setup(configs config.AppConfig, stopFn context.CancelFunc) error {
@@ -83,11 +76,11 @@ func (app *App) Setup(configs config.AppConfig, stopFn context.CancelFunc) error
 	config := app.Config.GetConfigs()
 
 	// SetLogger
-	loggerConfigs := &quetzal.DefaultLoggerConfig{
+	loggerConfigs := &logger.DefaultLoggerConfig{
 		Out:   os.Stdout,
 		Level: logrus.DebugLevel,
 	}
-	logger := quetzal.NewDefaultLogger(loggerConfigs)
+	logger := logger.NewDefaultLogger(loggerConfigs)
 	app.SetLogger(logger)
 
 	// Mysql Client
@@ -118,7 +111,7 @@ func (app *App) Setup(configs config.AppConfig, stopFn context.CancelFunc) error
 	return nil
 }
 
-func (a *App) initHTTPServer(ctx context.Context) *http.Server {
+func (a *App) SetHTTPServer() {
 	// init service dependencies here
 	helloWorldService := helloworld.NewHelloWorld(a.Logger)
 
@@ -126,19 +119,76 @@ func (a *App) initHTTPServer(ctx context.Context) *http.Server {
 	server := api.NewHttpServer().
 		SetConfig(configs).
 		SetLogger(a.Logger).
+		// TODO this should be changes according new implementations
 		SetHelloWorldService(helloWorldService)
 
-	h := handler.NewMuxHandler(ctx, server)
+	h := handler.NewMuxHandler(server)
 
 	address := fmt.Sprintf("%s:%v", configs.Http.Host, configs.Http.Port)
 
 	a.Logger.Info("setup http server", address)
 
-	return &http.Server{
+	httpServer := &http.Server{
 		Addr:              address,
 		Handler:           h,
 		ReadHeaderTimeout: time.Duration(30 * 1000),
 	}
+	server.Server = httpServer
+	a.ApiServer = server
+}
+
+func (a *App) SetGRPCServer() error {
+	// init service dependencies here
+	helloWorldService := helloworld.NewHelloWorld(a.Logger)
+
+	configs := a.Config.GetConfigs()
+	listener, err := net.Listen("tcp", ":"+strconv.Itoa(configs.Grpc.Port))
+	if err != nil {
+		return utils.BindError(errors.New("failed to get grpc listener"), err)
+	}
+	server := api.NewGRPCServer().
+		SetConfig(configs).
+		SetLogger(a.Logger).
+
+		// TODO this should be changes according new implementations
+		SetHelloWorldService(helloWorldService)
+
+	recoveryOpt := grpc_recovery.WithRecoveryHandler(func(p interface{}) (err error) {
+		err = utils.BindError(errors.New("panic recovered"), err)
+		a.Logger.Error(err)
+		return err
+	})
+	// get logger and create new entry for grpcLogger``
+	logrusLogger := a.Logger.GetLogger().(*logrus.Logger)
+	grpcLogger := logrus.NewEntry(logrusLogger)
+
+	rpcServer := grpc.NewServer(
+		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
+			grpc_ctxtags.StreamServerInterceptor(),
+			grpc_prometheus.StreamServerInterceptor,
+			grpc_logrus.StreamServerInterceptor(grpcLogger),
+			grpc_recovery.StreamServerInterceptor(recoveryOpt),
+		)),
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+			grpc_ctxtags.UnaryServerInterceptor(),
+			grpc_prometheus.UnaryServerInterceptor,
+			grpc_logrus.UnaryServerInterceptor(grpcLogger),
+			grpc_recovery.UnaryServerInterceptor(recoveryOpt),
+		)),
+		grpc.KeepaliveEnforcementPolicy(keepalive.EnforcementPolicy{
+			MinTime:             5 * time.Second,
+			PermitWithoutStream: true,
+		}),
+	)
+
+	hwproto.RegisterHelloWorldServiceServer(rpcServer, server)
+	reflection.Register(rpcServer)
+
+	server.Listener = listener
+	server.Server = rpcServer
+
+	a.ApiServer = server
+	return nil
 }
 
 // Recoverer is a recover function that allow restart the service

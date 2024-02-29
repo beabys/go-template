@@ -62,3 +62,7 @@ gen-api-doc: ## generates public api document
 	docker run --rm -v $(PWD)/api:/api -v $(PWD)/docs:/docs -w /docs node:hydrogen-slim sh -c "mkdir -p /docs && \
 	npm i -g @redocly/cli@latest && \
 	redocly build-docs -o /docs/index.html /api/v1/v1.yaml"
+
+.PHONY: proto-gen
+proto-gen:
+	docker run -w /proto/defs --rm  -v ${CURDIR}/proto:/proto ealves/buf:0.1.0-rc4 generate
