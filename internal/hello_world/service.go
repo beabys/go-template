@@ -3,10 +3,10 @@ package helloworld
 import (
 	"net/http"
 
-	"gitlab.com/beabys/quetzal"
+	"gitlab.com/beabys/go-http-template/pkg/logger"
 )
 
-func NewHelloWorld(logger quetzal.Logger) *HelloWorld {
+func NewHelloWorld(logger logger.Logger) *HelloWorld {
 	return &HelloWorld{
 		logger: logger,
 	}

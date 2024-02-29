@@ -31,14 +31,23 @@ func main() {
 	// Connect to Mysql
 	err = app.MysqlClient.Connect()
 	if err != nil {
-		panic(err)
+		app.Logger.Fatal(err)
 	}
 
 	// Connect to Redis
 	err = app.RedisClient.Connect()
 	if err != nil {
-		panic(err)
+		app.Logger.Fatal(err)
 	}
+
+	// Setup the http Server
+	app.SetHTTPServer()
+
+	// Setup the GRPC Server
+	// err = app.SetGRPCServer()
+	// if err != nil {
+	// 	app.Logger.Fatal(err)
+	// }
 
 	// start mux server
 	// Server already has a Recovery middleware

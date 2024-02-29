@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"context"
+	"errors"
 	"net/http"
 
 	"github.com/go-chi/chi/middleware"
@@ -10,14 +10,10 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	v1 "gitlab.com/beabys/go-http-template/api/v1"
 	"gitlab.com/beabys/go-http-template/internal/api"
-	"gitlab.com/beabys/quetzal"
 )
 
-const (
-	apiPrefix = "/v1"
-)
-
-func NewMuxHandler(ctx context.Context, server *api.HttpServer) http.Handler {
+func NewMuxHandler(server *api.HttpServer) http.Handler {
+	httpConfigs := server.Config.Http
 	r := chi.NewRouter() // http.Handler
 
 	// public auth router group
@@ -45,9 +41,9 @@ func NewMuxHandler(ctx context.Context, server *api.HttpServer) http.Handler {
 		r.Use(JsonContentType)
 		r.Use(middleware.Recoverer)
 
-		r.Mount(apiPrefix, v1.HandlerWithOptions(server, v1.ChiServerOptions{
+		r.Mount(httpConfigs.ApiPrefix, v1.HandlerWithOptions(server, v1.ChiServerOptions{
 			BaseRouter:       r,
-			BaseURL:          apiPrefix,
+			BaseURL:          httpConfigs.ApiPrefix,
 			ErrorHandlerFunc: DefaultError,
 		}))
 
@@ -57,13 +53,7 @@ func NewMuxHandler(ctx context.Context, server *api.HttpServer) http.Handler {
 }
 
 func DefaultError(w http.ResponseWriter, r *http.Request, err error) {
-	msg := map[string]interface{}{
-		"errot": err.Error(),
-	}
-	response := &v1.Response{
-		Error: &msg,
-	}
-	quetzal.ResponseJSON(w, http.StatusInternalServerError, response)
+	api.ErrorResponseJSON(w, http.StatusInternalServerError, err)
 }
 
 func JsonContentType(next http.Handler) http.Handler {
@@ -76,5 +66,5 @@ func JsonContentType(next http.Handler) http.Handler {
 
 // Not found Middleware
 func NotFound(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotFound)
+	api.ErrorResponseJSON(w, http.StatusNotFound, errors.New("not found"))
 }
