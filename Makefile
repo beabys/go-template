@@ -54,14 +54,13 @@ unit-coverage: unit ## Runs unit tests and generates a html coverage report
 .PHONY: gen-api-v1
 gen-api-v1: ## generates public api interfaces
 	docker container run --rm -v $(PWD):/app golang:1.22.0 sh -c "go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@latest && \
-    cd /app && \
-    oapi-codegen --package=api --generate="types,client,spec,chi-server,skip-prune" ./api/v1/v1.yaml | sed 's/V1/v1/g' | sed 's/Id$(WORD_END)/ID/g' | sed 's/Guid/GUID/g' | sed 's/Sku/SKU/g' | sed 's/Qoh/QOH/g' | sed 's/float32/float64/g' | sed 's/Url/URL/g' > ./api/v1/api.go"
+    cd /app && mkdir -p ./internal/api/v1 && \
+    oapi-codegen --package=v1 --generate="types,client,spec,chi-server,skip-prune" ./openapi.yaml | sed 's/V1/v1/g' | sed 's/Id$(WORD_END)/ID/g' | sed 's/Guid/GUID/g' | sed 's/Sku/SKU/g' | sed 's/Qoh/QOH/g' | sed 's/float32/float64/g' | sed 's/Url/URL/g' > ./internal/api/v1/v1.go"
 
 .PHONY: gen-api-doc
 gen-api-doc: ## generates public api document
-	docker run --rm -v $(PWD)/api:/api -v $(PWD)/docs:/docs -w /docs node:hydrogen-slim sh -c "mkdir -p /docs && \
-	npm i -g @redocly/cli@latest && \
-	redocly build-docs -o /docs/index.html /api/v1/v1.yaml"
+	docker run --rm -v $(PWD):/app -w /docs node:hydrogen-slim sh -c "npm i -g @redocly/cli@latest && \
+	redocly build-docs -o /app/docs/index.html /app/openapi.yaml"
 
 .PHONY: proto-gen
 proto-gen:

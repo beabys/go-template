@@ -7,7 +7,7 @@ docs/
 *.log
 
 # local configs
-/configs/config.yaml
+config.yaml
 .env
 
 # mysql

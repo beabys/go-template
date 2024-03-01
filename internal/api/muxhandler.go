@@ -1,4 +1,4 @@
-package handler
+package api
 
 import (
 	"errors"
@@ -8,11 +8,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	v1 "gitlab.com/beabys/go-http-template/api/v1"
-	"gitlab.com/beabys/go-http-template/internal/api"
+	v1 "gitlab.com/beabys/go-http-template/internal/api/v1"
 )
 
-func NewMuxHandler(server *api.HttpServer) http.Handler {
+func NewMuxHandler(server *HttpServer) http.Handler {
 	httpConfigs := server.Config.Http
 	r := chi.NewRouter() // http.Handler
 
@@ -40,6 +39,7 @@ func NewMuxHandler(server *api.HttpServer) http.Handler {
 
 		r.Use(JsonContentType)
 		r.Use(middleware.Recoverer)
+		r.Use(middleware.StripSlashes)
 
 		r.Mount(httpConfigs.ApiPrefix, v1.HandlerWithOptions(server, v1.ChiServerOptions{
 			BaseRouter:       r,
@@ -53,7 +53,7 @@ func NewMuxHandler(server *api.HttpServer) http.Handler {
 }
 
 func DefaultError(w http.ResponseWriter, r *http.Request, err error) {
-	api.ErrorResponseJSON(w, http.StatusInternalServerError, err)
+	ErrorResponseJSON(w, http.StatusInternalServerError, err)
 }
 
 func JsonContentType(next http.Handler) http.Handler {
@@ -66,5 +66,5 @@ func JsonContentType(next http.Handler) http.Handler {
 
 // Not found Middleware
 func NotFound(w http.ResponseWriter, r *http.Request) {
-	api.ErrorResponseJSON(w, http.StatusNotFound, errors.New("not found"))
+	ErrorResponseJSON(w, http.StatusNotFound, errors.New("not found"))
 }

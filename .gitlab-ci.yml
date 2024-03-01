@@ -16,7 +16,7 @@ docs:
   stage: docs
   image: node:hydrogen-slim
   script:
-    - mkdir -p ./docs && npm i -g @redocly/cli@latest && redocly build-docs -o ./docs/index.html ./api/v1/v1.yaml
+    - mkdir -p ./docs && npm i -g @redocly/cli@latest && redocly build-docs -o ./docs/index.html ./openapi.yaml
   artifacts:
     expire_in: 1 day
     paths:

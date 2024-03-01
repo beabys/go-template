@@ -20,7 +20,6 @@ import (
 	"gitlab.com/beabys/go-http-template/internal/api"
 	"gitlab.com/beabys/go-http-template/internal/app/config"
 	"gitlab.com/beabys/go-http-template/internal/app/database"
-	"gitlab.com/beabys/go-http-template/internal/app/handler"
 	helloworld "gitlab.com/beabys/go-http-template/internal/hello_world"
 	"gitlab.com/beabys/go-http-template/internal/utils"
 	"gitlab.com/beabys/go-http-template/pkg/logger"
@@ -122,18 +121,18 @@ func (a *App) SetHTTPServer() {
 		// TODO this should be changes according new implementations
 		SetHelloWorldService(helloWorldService)
 
-	h := handler.NewMuxHandler(server)
+	h := api.NewMuxHandler(server)
 
 	address := fmt.Sprintf("%s:%v", configs.Http.Host, configs.Http.Port)
 
 	a.Logger.Info("setup http server", address)
 
-	httpServer := &http.Server{
+	server.Server = &http.Server{
 		Addr:              address,
 		Handler:           h,
 		ReadHeaderTimeout: time.Duration(30 * 1000),
 	}
-	server.Server = httpServer
+
 	a.ApiServer = server
 }
 
