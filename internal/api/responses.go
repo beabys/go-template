@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	v1 "gitlab.com/beabys/go-http-template/api/v1"
+	v1 "gitlab.com/beabys/go-http-template/internal/api/v1"
 )
 
 // SuccessResponseJSON return a response with status code

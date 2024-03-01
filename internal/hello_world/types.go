@@ -3,12 +3,12 @@ package helloworld
 import (
 	"context"
 
-	"gitlab.com/beabys/go-http-template/internal/domain/models"
+	"gitlab.com/beabys/go-http-template/internal/domain/model"
 	"gitlab.com/beabys/go-http-template/pkg/logger"
 )
 
 type HelloWorldIntereface interface {
-	GetHelloWorld(context.Context) (*models.HelloWorld, error)
+	GetHelloWorld(context.Context) (*model.HelloWorld, error)
 }
 
 type HelloWorld struct {
