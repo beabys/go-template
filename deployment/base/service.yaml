@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-http-template-svc
+spec:
+  selector:
+    app: go-http-template
+  # type: ClusterIP
+  ports:
+  - port: 3001
+    targetPort: 3001

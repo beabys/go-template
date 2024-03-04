@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: go-http-template-configmap
+data:
+  config.yaml: |
+    stage: development
+    grpc:
+        port: 3001
+    http:
+        host: 127.0.0.1
+        port: 3001
+        api_prefix: "/v1"
+    db:
+        user: user
+        password: password
+        host: 1270.0.1
+        port: 3306
+        name: go-http-template
+        log_sql: true
+        max_idle_connections: 5
+        max_open_conn: 5
+        connection_max_lifetime: 10s
+    redis:
+        password: password
+        host: 127.0.0.1
+        port: 6379
+        database: 0
