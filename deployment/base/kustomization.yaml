@@ -6,11 +6,10 @@ resources:
 - service.yaml
 - hpa.yaml
 
-  
 configMapGenerator:
-- literals:
+- name: go-http-template-config
+  literals:
   - config_file_path=/etc/config/config.yaml
-  name: go-http-template-config
 
 generatorOptions:
   annotations:
