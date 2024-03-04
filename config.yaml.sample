@@ -6,17 +6,17 @@ http:
     port: 3001
     api_prefix: "/v1"
 db:
-    user: ${DB_USER}
-    password: ${DB_PWD}
-    host: ${DB_HOST}
-    port: ${DB_PORT}
-    name: ${DB_DATABASE}
+    user: user
+    password: password
+    host: 1270.0.1
+    port: 3306
+    name: go-http-template
     log_sql: true
     max_idle_connections: 5
     max_open_conn: 5
     connection_max_lifetime: 10s
 redis:
-    password: ${REDIS_PASSWORD}
-    host: ${REDIS_HOST}
-    port: ${REDIS_PORT}
-    database: ${REDIS_DB}
+    password: password
+    host: 127.0.0.1
+    port: 6379
+    database: 0

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-http-template-deployment
+  labels:
+    app: go-http-template
+spec:
+  selector:
+    matchLabels:
+      app: go-http-template
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: go-http-template
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: '50m'
+            memory: '50Mi'
+          limits:
+            cpu: '150m'
+            memory: '200Mi'

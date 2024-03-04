@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- deployment.yaml
+- service.yaml
+- hpa.yaml
+
+  
+configMapGenerator:
+- literals:
+  - config_file_path=/etc/config/config.yaml
+  name: go-http-template-config
+
+generatorOptions:
+  annotations:
+    note: generated
+  disableNameSuffixHash: true
+  labels:
+    type: generated
+labels:
+- includeSelectors: true
+  pairs:
+    app: go-http-template
