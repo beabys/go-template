@@ -125,7 +125,7 @@ func (a *App) SetHTTPServer() {
 
 	address := fmt.Sprintf("%s:%v", configs.Http.Host, configs.Http.Port)
 
-	a.Logger.Info("setup http server", address)
+	a.Logger.Info("setup http server ", address)
 
 	server.Server = &http.Server{
 		Addr:              address,

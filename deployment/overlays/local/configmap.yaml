@@ -14,8 +14,8 @@ data:
     db:
         user: user
         password: password
-        host: 1270.0.1
-        port: 3306
+        host: host.minikube.internal
+        port: 33061
         name: go-http-template
         log_sql: true
         max_idle_connections: 5
@@ -23,6 +23,6 @@ data:
         connection_max_lifetime: 10s
     redis:
         password: password
-        host: 127.0.0.1
-        port: 6379
+        host: host.minikube.internal
+        port: 63791
         database: 0
