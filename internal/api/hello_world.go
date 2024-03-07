@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	v1 "gitlab.com/beabys/go-http-template/internal/api/v1"
 	hwproto "gitlab.com/beabys/go-http-template/proto/gen/go/hello_world/v1"
 )
 
@@ -12,17 +13,21 @@ import (
 // from openapi
 
 // HelloWorld implements the method Hello World
-func (hs *HttpServer) HelloWorld(w http.ResponseWriter, r *http.Request) {
+func (hs *HttpServer) HelloWorld(w http.ResponseWriter, r *http.Request) *v1.Response {
+	response := v1.CommonResponse{}
 	hello, err := hs.HelloWorldSvc.GetHelloWorld(r.Context())
 	if err != nil {
 		hs.Logger.Error(err)
-		ErrorResponseJSON(w, http.StatusInternalServerError, err)
-		return
+		response.Data = map[string]interface{}{
+			"error": err.Error(),
+		}
+		return v1.HelloWorldJSON5xxResponse(response)
 	}
-	data := map[string]interface{}{
+	response.Success = true
+	response.Data = map[string]interface{}{
 		"hello": hello.Hello,
 	}
-	SuccessResponseJSON(w, data)
+	return v1.HelloWorldJSON200Response(response)
 }
 
 // from grpc

@@ -6,7 +6,7 @@ info:
 security:
   - BearerAuth: []
 paths:
-  /hello:
+  /v1/hello:
     get:
       tags:
         - hello-world
@@ -21,7 +21,7 @@ paths:
         "404":
           description: Not Found
           $ref: "#/components/responses/NotFoundResponse"
-        default:
+        "5xx":
           description: Unexpected error
           $ref: "#/components/responses/InternalErrorResponse"
 components:
@@ -31,7 +31,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Response"
+            $ref: "#/components/schemas/CommonResponse"
           example:   # Sample object
               success: true
               data: 
@@ -41,7 +41,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Response"
+            $ref: "#/components/schemas/CommonResponse"
           example:   # Sample object
               success: false
               data: 
@@ -51,7 +51,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Response"
+            $ref: "#/components/schemas/CommonResponse"
           example:   # Sample object
               success: false
               data: 
@@ -61,13 +61,13 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Response"
+            $ref: "#/components/schemas/CommonResponse"
           example:   # Sample object
               success: false
               data: 
                 error: Internal Server Error
   schemas:
-    Response:
+    CommonResponse:
       type: object
       required:
         - "success"
