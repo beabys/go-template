@@ -23,9 +23,8 @@ type Grpc struct {
 
 // Http is a struct to define configurations for the http Server
 type Http struct {
-	Host      string `mapstructure:"host"`
-	Port      int    `mapstructure:"port"`
-	ApiPrefix string `mapstructure:"api_prefix"`
+	Host string `mapstructure:"host"`
+	Port int    `mapstructure:"port"`
 }
 
 // MysqlConfigurations is a struct to define configurations of the db connection

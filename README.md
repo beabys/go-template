@@ -64,7 +64,7 @@ Edit the corresponding fields on each file if required
         make mockery       - run the mockery command to create mock interfaces(requires mockery installed)
         make unit          - run Unit test of the app
         make unit-coverage - run Unit test and generating html report
-        gen-api-v1         - generate v1 code from apenapi.yaml file
+        gen-api            - generate v1 code from apenapi.yaml file
         gen-api-doc        - generate api html documentation from apenapi.yaml file
         proto-gen          - genetate proto contracts in php and go
 

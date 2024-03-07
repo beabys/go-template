@@ -23,7 +23,7 @@ func ErrorResponseJSON(w http.ResponseWriter, statusCode int, err error) {
 
 // ResponseJSON return a response with status code
 func ResponseJSON(w http.ResponseWriter, success bool, statusCode int, data map[string]interface{}) {
-	var response = v1.Response{
+	var response = v1.CommonResponse{
 		Success: success,
 		Data:    data,
 	}

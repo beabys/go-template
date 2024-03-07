@@ -7,6 +7,7 @@ require (
 	github.com/go-chi/chi v1.5.5
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/go-chi/cors v1.2.1
+	github.com/go-chi/render v1.0.3
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/prometheus/client_golang v1.18.0
@@ -20,6 +21,7 @@ require (
 )
 
 require (
+	github.com/ajg/form v1.5.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect

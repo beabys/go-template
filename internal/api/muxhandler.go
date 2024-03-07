@@ -12,7 +12,6 @@ import (
 )
 
 func NewMuxHandler(server *HttpServer) http.Handler {
-	httpConfigs := server.Config.Http
 	r := chi.NewRouter() // http.Handler
 
 	// public auth router group
@@ -41,11 +40,7 @@ func NewMuxHandler(server *HttpServer) http.Handler {
 		r.Use(middleware.Recoverer)
 		r.Use(middleware.StripSlashes)
 
-		r.Mount(httpConfigs.ApiPrefix, v1.HandlerWithOptions(server, v1.ChiServerOptions{
-			BaseRouter:       r,
-			BaseURL:          httpConfigs.ApiPrefix,
-			ErrorHandlerFunc: DefaultError,
-		}))
+		v1.Handler(server, v1.WithRouter(r))
 
 	})
 
