@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"os"
 	"runtime/debug"
 	"strconv"
 	"time"
@@ -24,6 +23,7 @@ import (
 	"gitlab.com/beabys/go-http-template/internal/utils"
 	"gitlab.com/beabys/go-http-template/pkg/logger"
 	"gitlab.com/beabys/quetzal"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
@@ -75,11 +75,12 @@ func (app *App) Setup(configs config.AppConfig, stopFn context.CancelFunc) error
 	config := app.Config.GetConfigs()
 
 	// SetLogger
-	loggerConfigs := &logger.DefaultLoggerConfig{
-		Out:   os.Stdout,
-		Level: logrus.DebugLevel,
+	loggerConfigs := &logger.DefaultLoggerConfig{}
+	logger, err := logger.NewDefaultLogger(loggerConfigs)
+	if err != nil {
+		return err
 	}
-	logger := logger.NewDefaultLogger(loggerConfigs)
+
 	app.SetLogger(logger)
 
 	// Mysql Client
@@ -110,7 +111,7 @@ func (app *App) Setup(configs config.AppConfig, stopFn context.CancelFunc) error
 	return nil
 }
 
-func (a *App) SetHTTPServer() {
+func (a *App) SetHTTPServer() error {
 	// init service dependencies here
 	helloWorldService := helloworld.NewHelloWorld(a.Logger)
 
@@ -121,11 +122,14 @@ func (a *App) SetHTTPServer() {
 		// TODO this should be changes according new implementations
 		SetHelloWorldService(helloWorldService)
 
-	h := api.NewMuxHandler(server)
+	h, err := api.NewMuxHandler(server)
+	if err != nil {
+		return err
+	}
 
 	address := fmt.Sprintf("%s:%v", configs.Http.Host, configs.Http.Port)
 
-	a.Logger.Info("setup http server ", address)
+	a.Logger.Info("setup http server ", zap.String("address", address))
 
 	server.Server = &http.Server{
 		Addr:              address,
@@ -134,6 +138,8 @@ func (a *App) SetHTTPServer() {
 	}
 
 	a.ApiServer = server
+
+	return nil
 }
 
 func (a *App) SetGRPCServer() error {
@@ -153,8 +159,7 @@ func (a *App) SetGRPCServer() error {
 		SetHelloWorldService(helloWorldService)
 
 	recoveryOpt := grpc_recovery.WithRecoveryHandler(func(p interface{}) (err error) {
-		err = utils.BindError(errors.New("panic recovered"), err)
-		a.Logger.Error(err)
+		a.Logger.Error("panic recovered", err)
 		return err
 	})
 	// get logger and create new entry for grpcLogger
@@ -197,8 +202,7 @@ func (app *App) Recoverer(fn func()) {
 		if r := recover(); r != nil {
 			logger := app.GetLogger()
 			stackTrace := fmt.Sprintf("%v\n%v", r, string(debug.Stack()))
-			message := "Recovering from panic"
-			logger.Error(message, fmt.Errorf(stackTrace))
+			logger.Warn("Recovering from panic", zap.String("stackTrace", stackTrace))
 			go app.Recoverer(fn)
 		}
 	}()

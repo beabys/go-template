@@ -7,6 +7,7 @@ import (
 	"gitlab.com/beabys/go-http-template/internal/app/config"
 	mocks "gitlab.com/beabys/go-http-template/internal/mocks/app/config"
 	"gitlab.com/beabys/go-http-template/pkg/logger"
+	"go.uber.org/zap"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -37,7 +38,7 @@ func TestApp(t *testing.T) {
 
 	t.Run("test Set Logger", func(t *testing.T) {
 		app := New()
-		logger := logger.NewDefaultLogger(&logger.DefaultLoggerConfig{})
+		logger, _ := logger.NewDefaultLogger(&logger.DefaultLoggerConfig{})
 		app.SetLogger(logger)
 		assert.Equal(t, app.GetLogger(), logger)
 
@@ -68,7 +69,7 @@ func TestRecover(t *testing.T) {
 			t.Errorf("The code did not panic")
 		}()
 		app := New()
-		mockLogger := logger.NewDefaultLogger(&logger.DefaultLoggerConfig{})
+		mockLogger, _ := logger.NewDefaultLogger(&logger.DefaultLoggerConfig{})
 		logger := &MockLogger{mockLogger}
 		app.Logger = logger
 		app.Recoverer(WithPanic)
@@ -83,7 +84,7 @@ type MockLogger struct {
 	*logger.DefaultLogger
 }
 
-func (m *MockLogger) Error(v ...interface{}) {
+func (m *MockLogger) Warn(string, ...zap.Field) {
 	// using the error function to panic during the recovery
 	// in that case means recovery is going inside properly
 	panic("this message means function panic and go into the recoverer")

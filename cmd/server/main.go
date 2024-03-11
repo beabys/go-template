@@ -8,6 +8,7 @@ import (
 
 	"gitlab.com/beabys/go-http-template/internal/app"
 	"gitlab.com/beabys/go-http-template/internal/app/config"
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -28,31 +29,31 @@ func main() {
 		panic(err)
 	}
 
-	// Connect to Mysql
-	err = app.MysqlClient.Connect()
-	if err != nil {
-		app.Logger.Fatal(err)
-	}
+	// // Connect to Mysql
+	// err = app.MysqlClient.Connect()
+	// if err != nil {
+	// 	app.Logger.Fatal("error setting Mysql client", zap.Error(err))
+	// }
 
-	// Connect to Redis
-	err = app.RedisClient.Connect()
-	if err != nil {
-		app.Logger.Fatal(err)
-	}
+	// // Connect to Redis
+	// err = app.RedisClient.Connect()
+	// if err != nil {
+	// 	app.Logger.Fatal("error setting Mysql client", zap.Error(err))
+	// }
 
 	// Setup the http Server
-	app.SetHTTPServer()
+	err = app.SetHTTPServer()
 
 	// // Setup the GRPC Server
 	// err = app.SetGRPCServer()
-	// if err != nil {
-	// 	app.Logger.Fatal(err)
-	// }
+	if err != nil {
+		app.Logger.Fatal("error setting server", zap.Error(err))
+	}
 
 	// run the server
 	err = app.Run(ctx)
 	if err != nil {
-		app.Logger.Error("application stopped with error:", err.Error())
+		app.Logger.Error("application stopped with error:", err)
 	}
 	app.Logger.Info("application stopped")
 }
