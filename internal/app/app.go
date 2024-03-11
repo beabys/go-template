@@ -1,7 +1,6 @@
 package app
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"net"
@@ -11,11 +10,10 @@ import (
 	"time"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	"github.com/sirupsen/logrus"
 	"gitlab.com/beabys/go-http-template/internal/api"
 	"gitlab.com/beabys/go-http-template/internal/app/config"
 	"gitlab.com/beabys/go-http-template/internal/app/database"
@@ -61,12 +59,7 @@ func (app *App) SetRedisClient(r *database.Redis) {
 	app.RedisClient = r
 }
 
-func (app *App) Run(ctx context.Context) error {
-	return app.ApiServer.Run(ctx, app.StopFn)
-}
-
-func (app *App) Setup(configs config.AppConfig, stopFn context.CancelFunc) error {
-	app.StopFn = stopFn
+func (app *App) Setup(configs config.AppConfig) error {
 	err := app.SetConfigs(configs)
 	if err != nil {
 		return err
@@ -137,7 +130,7 @@ func (a *App) SetHTTPServer() error {
 		ReadHeaderTimeout: time.Duration(30 * 1000),
 	}
 
-	a.ApiServer = server
+	a.HttpServer = server
 
 	return nil
 }
@@ -163,20 +156,19 @@ func (a *App) SetGRPCServer() error {
 		return err
 	})
 	// get logger and create new entry for grpcLogger
-	logrusLogger := a.Logger.GetLogger().(*logrus.Logger)
-	grpcLogger := logrus.NewEntry(logrusLogger)
+	logger := a.Logger.GetLogger().(*zap.Logger)
 
 	rpcServer := grpc.NewServer(
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
 			grpc_ctxtags.StreamServerInterceptor(),
 			grpc_prometheus.StreamServerInterceptor,
-			grpc_logrus.StreamServerInterceptor(grpcLogger),
+			grpc_zap.StreamServerInterceptor(logger),
 			grpc_recovery.StreamServerInterceptor(recoveryOpt),
 		)),
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 			grpc_ctxtags.UnaryServerInterceptor(),
 			grpc_prometheus.UnaryServerInterceptor,
-			grpc_logrus.UnaryServerInterceptor(grpcLogger),
+			grpc_zap.UnaryServerInterceptor(logger),
 			grpc_recovery.UnaryServerInterceptor(recoveryOpt),
 		)),
 		grpc.KeepaliveEnforcementPolicy(keepalive.EnforcementPolicy{
@@ -191,7 +183,7 @@ func (a *App) SetGRPCServer() error {
 	server.Listener = listener
 	server.Server = rpcServer
 
-	a.ApiServer = server
+	a.GrpcServer = server
 	return nil
 }
 

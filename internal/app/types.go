@@ -20,8 +20,8 @@ type Application interface {
 type App struct {
 	Config      config.AppConfig
 	Logger      logger.Logger
-	StopFn      context.CancelFunc
 	MysqlClient *database.Mysql
 	RedisClient *database.Redis
-	ApiServer   api.ApiServer
+	HttpServer  api.ApiServer
+	GrpcServer  api.ApiServer
 }

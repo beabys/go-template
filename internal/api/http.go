@@ -2,13 +2,14 @@ package api
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"time"
 
 	"gitlab.com/beabys/go-http-template/internal/app/config"
 	helloworld "gitlab.com/beabys/go-http-template/internal/hello_world"
 	"gitlab.com/beabys/go-http-template/pkg/logger"
-	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
 )
 
 // NewHttpServer returns a new pointer of HttpServer
@@ -35,24 +36,28 @@ func (hs *HttpServer) SetHelloWorldService(hw helloworld.HelloWorldIntereface) *
 }
 
 // Run implements Run api server function for Http server
-func (hs *HttpServer) Run(ctx context.Context, cancelFn context.CancelFunc) error {
-	var err error = nil
-	go func() {
-		if err := hs.Server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			hs.Logger.Fatal("http server stopped with error", zap.Error(err))
+func (hs *HttpServer) Run(ctx context.Context, wg *errgroup.Group) {
+	wg.Go(func() error {
+		hs.Logger.Info("http server started")
+		if err := hs.Server.ListenAndServe(); err != nil {
+			if errors.Is(err, http.ErrServerClosed) {
+				return nil
+			}
+			hs.Logger.Error("http server stopped with error", err)
+			return err
 		}
-	}()
+		return nil
+	})
 
-	hs.Logger.Info("app started")
-
-	<-ctx.Done()
-	cancelFn()
-	hs.Logger.Info("shutting down gracefully start")
-
-	ctxTimeout, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err = hs.Server.Shutdown(ctxTimeout); err != nil {
-		hs.Logger.Error("error shutting server down", err)
-	}
-	return err
+	wg.Go(func() error {
+		<-ctx.Done()
+		hs.Logger.Info("shutting down gracefully http server start")
+		ctxTimeout, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := hs.Server.Shutdown(ctxTimeout); err != nil {
+			hs.Logger.Error("error shutting server down", err)
+			return err
+		}
+		return nil
+	})
 }
