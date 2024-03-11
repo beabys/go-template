@@ -47,7 +47,7 @@ func TestApp(t *testing.T) {
 		app := New()
 		mockConfig := mocks.NewAppConfig(t)
 		mockConfig.On("LoadConfigs").Return(fmt.Errorf("make it fail"))
-		assert.ErrorContains(t, app.Setup(mockConfig, nil), "make it fail")
+		assert.ErrorContains(t, app.Setup(mockConfig), "make it fail")
 	})
 
 	t.Run("test Success Setup", func(t *testing.T) {
@@ -55,7 +55,7 @@ func TestApp(t *testing.T) {
 		mockConfig := mocks.NewAppConfig(t)
 		mockConfig.On("LoadConfigs").Return(nil)
 		mockConfig.On("GetConfigs").Return(&config.Config{})
-		assert.NoError(t, app.Setup(mockConfig, nil))
+		assert.NoError(t, app.Setup(mockConfig))
 	})
 }
 

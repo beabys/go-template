@@ -2,11 +2,13 @@ package api
 
 import (
 	"context"
+	"errors"
 
 	"gitlab.com/beabys/go-http-template/internal/app/config"
 	helloworld "gitlab.com/beabys/go-http-template/internal/hello_world"
 	"gitlab.com/beabys/go-http-template/pkg/logger"
-	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
+	"google.golang.org/grpc"
 )
 
 // NewHttpServer returns a new pointer of HttpServer
@@ -33,18 +35,24 @@ func (gs *GRPCServer) SetHelloWorldService(hw helloworld.HelloWorldIntereface) *
 }
 
 // Run implements Run api server function for gRPC server
-func (gs *GRPCServer) Run(ctx context.Context, cancelFn context.CancelFunc) error {
-	go func() {
+func (gs *GRPCServer) Run(ctx context.Context, wg *errgroup.Group) {
+
+	wg.Go(func() error {
+		gs.Logger.Info("grpc server started")
 		if err := gs.Server.Serve(gs.Listener); err != nil {
-			gs.Logger.Fatal("grpc server stopped with error", zap.Error(err))
+			if errors.Is(err, grpc.ErrServerStopped) {
+				return nil
+			}
+			gs.Logger.Error("grpc server failed to serve", err)
+			return err
 		}
-	}()
+		return nil
+	})
 
-	gs.Logger.Info("app started")
-
-	<-ctx.Done()
-	cancelFn()
-	gs.Logger.Info("shutting down gracefully start")
-	gs.Server.GracefulStop()
-	return nil
+	wg.Go(func() error {
+		<-ctx.Done()
+		gs.Logger.Info("shutting down gracefully grpc server start")
+		gs.Server.GracefulStop()
+		return nil
+	})
 }
