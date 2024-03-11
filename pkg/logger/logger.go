@@ -1,72 +1,86 @@
 package logger
 
 import (
-	"io"
-	"os"
+	"fmt"
 
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 type Logger interface {
 	GetLogger() any
-	Debug(...any)
-	Info(...any)
-	Warn(...any)
-	Error(...any)
-	Fatal(...any)
+	Debug(string, ...zap.Field)
+	Info(string, ...zap.Field)
+	Warn(string, ...zap.Field)
+	Error(string, error, ...zap.Field)
+	Fatal(string, ...zap.Field)
 }
 
 type DefaultLogger struct {
-	log *logrus.Logger
-}
-type DefaultLoggerConfig struct {
-	Formater logrus.Formatter
-	Out      io.Writer
-	Level    logrus.Level
+	log *zap.Logger
 }
 
-func NewDefaultLogger(config *DefaultLoggerConfig) *DefaultLogger {
-	if config.Formater == nil {
-		config.Formater = &logrus.JSONFormatter{}
+type DefaultLoggerConfig struct {
+	Out   []string
+	Error []string
+	Level zapcore.Level
+}
+
+func NewDefaultLogger(config *DefaultLoggerConfig) (*DefaultLogger, error) {
+	if config.Out == nil {
+		config.Out = []string{"stdout"}
 	}
-	if config.Formater == nil {
-		config.Out = os.Stderr
+	if config.Error == nil {
+		config.Error = []string{"stderr"}
 	}
-	if config.Formater == nil {
-		config.Level = logrus.DebugLevel
+
+	logConfig := zap.Config{
+		OutputPaths:      config.Out,
+		ErrorOutputPaths: config.Error,
+		Level:            zap.NewAtomicLevelAt(config.Level),
+		Encoding:         "json",
+		EncoderConfig: zapcore.EncoderConfig{
+			LevelKey:     "level",
+			TimeKey:      "time",
+			MessageKey:   "msg",
+			EncodeTime:   zapcore.ISO8601TimeEncoder,
+			EncodeLevel:  zapcore.LowercaseLevelEncoder,
+			EncodeCaller: zapcore.ShortCallerEncoder,
+		},
 	}
-	logger := &logrus.Logger{
-		Formatter: config.Formater,
-		Out:       config.Out,
-		Level:     config.Level,
+	l, err := logConfig.Build()
+	if err != nil {
+		return nil, fmt.Errorf("error setting up default logger - %w", err)
 	}
-	return &DefaultLogger{logger}
+
+	return &DefaultLogger{l}, nil
 }
 
 func (l *DefaultLogger) GetLogger() any {
 	return l.log
 }
 
-func (l *DefaultLogger) Debug(v ...any) {
-	l.log.Debug(v...)
+func (l *DefaultLogger) Debug(s string, f ...zap.Field) {
+	l.log.Debug(s, f...)
 }
 
-func (l *DefaultLogger) Info(v ...any) {
-	l.log.Info(v...)
+func (l *DefaultLogger) Info(s string, f ...zap.Field) {
+	l.log.Info(s, f...)
 }
 
-func (l *DefaultLogger) Warn(v ...any) {
-	l.log.Warn(v...)
+func (l *DefaultLogger) Warn(s string, f ...zap.Field) {
+	l.log.Warn(s, f...)
 }
 
-func (l *DefaultLogger) Error(v ...any) {
-	l.log.Error(v...)
+func (l *DefaultLogger) Error(s string, err error, t ...zap.Field) {
+	t = append(t, zap.Error(err))
+	l.log.Error(s, t...)
 }
 
-func (l *DefaultLogger) Fatal(v ...any) {
-	l.log.Fatal(v...)
+func (l *DefaultLogger) Fatal(s string, f ...zap.Field) {
+	l.log.Fatal(s, f...)
 }
 
-func (l *DefaultLogger) With(key string, value any) *logrus.Entry {
-	return l.log.WithField(key, value)
+func (l *DefaultLogger) With(f ...zap.Field) *zap.Logger {
+	return l.log.With(f...)
 }

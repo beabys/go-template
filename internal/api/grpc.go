@@ -2,12 +2,11 @@ package api
 
 import (
 	"context"
-	"errors"
 
 	"gitlab.com/beabys/go-http-template/internal/app/config"
 	helloworld "gitlab.com/beabys/go-http-template/internal/hello_world"
-	"gitlab.com/beabys/go-http-template/internal/utils"
 	"gitlab.com/beabys/go-http-template/pkg/logger"
+	"go.uber.org/zap"
 )
 
 // NewHttpServer returns a new pointer of HttpServer
@@ -37,8 +36,7 @@ func (gs *GRPCServer) SetHelloWorldService(hw helloworld.HelloWorldIntereface) *
 func (gs *GRPCServer) Run(ctx context.Context, cancelFn context.CancelFunc) error {
 	go func() {
 		if err := gs.Server.Serve(gs.Listener); err != nil {
-			err = utils.BindError(errors.New("grpc server stopped with error"), err)
-			gs.Logger.Fatal(err)
+			gs.Logger.Fatal("grpc server stopped with error", zap.Error(err))
 		}
 	}()
 

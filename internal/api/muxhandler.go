@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/middleware"
@@ -11,15 +12,26 @@ import (
 	v1 "gitlab.com/beabys/go-http-template/internal/api/v1"
 )
 
-func NewMuxHandler(server *HttpServer) http.Handler {
+func NewMuxHandler(server *HttpServer) (http.Handler, error) {
+	swagger, err := v1.GetSwagger()
+	if err != nil {
+		return nil, fmt.Errorf("error loading swagger spec\n: %w", err)
+	}
+
+	// Clear out the servers array in the swagger spec, that skips validating
+	// that server names match. We don't know how this thing will be run.
+	swagger.Servers = nil
+
 	r := chi.NewRouter() // http.Handler
+
+	r.NotFound(NotFound)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.StripSlashes)
 
 	// public auth router group
 	r.Group(func(r chi.Router) {
 		r.Mount("/metrics", promhttp.Handler())
 	})
-
-	r.NotFound(NotFound)
 
 	r.Group(func(r chi.Router) {
 		// cors
@@ -36,19 +48,21 @@ func NewMuxHandler(server *HttpServer) http.Handler {
 			MaxAge: 300, // Maximum value not ignored by any of major browsers
 		}))
 
-		r.Use(JsonContentType)
-		r.Use(middleware.Recoverer)
-		r.Use(middleware.StripSlashes)
-
-		v1.Handler(server, v1.WithRouter(r))
+		// Mount oapi routes
+		r.Mount("/", v1.HandlerWithOptions(server, v1.ChiServerOptions{
+			BaseRouter: r,
+			ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
+				errorResponseJSON(w, http.StatusInternalServerError, err)
+			},
+		}))
 
 	})
 
-	return r
+	return r, nil
 }
 
 func DefaultError(w http.ResponseWriter, r *http.Request, err error) {
-	ErrorResponseJSON(w, http.StatusInternalServerError, err)
+	errorResponseJSON(w, http.StatusInternalServerError, err)
 }
 
 func JsonContentType(next http.Handler) http.Handler {
@@ -61,5 +75,5 @@ func JsonContentType(next http.Handler) http.Handler {
 
 // Not found Middleware
 func NotFound(w http.ResponseWriter, r *http.Request) {
-	ErrorResponseJSON(w, http.StatusNotFound, errors.New("not found"))
+	errorResponseJSON(w, http.StatusNotFound, errors.New("not found"))
 }

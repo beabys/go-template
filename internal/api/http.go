@@ -2,14 +2,13 @@ package api
 
 import (
 	"context"
-	"errors"
 	"net/http"
 	"time"
 
 	"gitlab.com/beabys/go-http-template/internal/app/config"
 	helloworld "gitlab.com/beabys/go-http-template/internal/hello_world"
-	"gitlab.com/beabys/go-http-template/internal/utils"
 	"gitlab.com/beabys/go-http-template/pkg/logger"
+	"go.uber.org/zap"
 )
 
 // NewHttpServer returns a new pointer of HttpServer
@@ -40,8 +39,7 @@ func (hs *HttpServer) Run(ctx context.Context, cancelFn context.CancelFunc) erro
 	var err error = nil
 	go func() {
 		if err := hs.Server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			err = utils.BindError(errors.New("http server stopped with error"), err)
-			hs.Logger.Fatal(err)
+			hs.Logger.Fatal("http server stopped with error", zap.Error(err))
 		}
 	}()
 

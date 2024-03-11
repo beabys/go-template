@@ -1,4 +1,4 @@
-openapi: 3.0.1
+openapi: 3.0.0
 
 info:
   title: Go template app
@@ -21,7 +21,7 @@ paths:
         "404":
           description: Not Found
           $ref: "#/components/responses/NotFoundResponse"
-        "5xx":
+        "5XX":
           description: Unexpected error
           $ref: "#/components/responses/InternalErrorResponse"
 components:
@@ -31,7 +31,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/CommonResponse"
+            $ref: "#/components/schemas/Success"
           example:   # Sample object
               success: true
               data: 
@@ -41,7 +41,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/CommonResponse"
+            $ref: "#/components/schemas/Error"
           example:   # Sample object
               success: false
               data: 
@@ -51,7 +51,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/CommonResponse"
+            $ref: "#/components/schemas/Error"
           example:   # Sample object
               success: false
               data: 
@@ -61,13 +61,13 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/CommonResponse"
+            $ref: "#/components/schemas/Error"
           example:   # Sample object
               success: false
               data: 
                 error: Internal Server Error
   schemas:
-    CommonResponse:
+    Success:
       type: object
       required:
         - "success"
@@ -77,3 +77,18 @@ components:
           type: boolean
         data:
           type: object
+    Error:
+      type: object
+      required:
+        - "success"
+        - "data"
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          required:
+            - "success"
+          properties:
+            msg:
+              type: string
