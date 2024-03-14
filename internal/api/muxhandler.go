@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	v1 "gitlab.com/beabys/go-http-template/internal/api/v1"
 )
@@ -24,9 +25,16 @@ func NewMuxHandler(server *HttpServer) (http.Handler, error) {
 
 	r := chi.NewRouter() // http.Handler
 
+	// metrics latency
+	prometheusMetrics := NewPrometheusMetrics()
+	prometheus.MustRegister(prometheusMetrics.latency)
+
+	// default middlewars
 	r.NotFound(NotFound)
 	r.Use(middleware.Recoverer)
+	r.Use(middleware.NoCache)
 	r.Use(middleware.StripSlashes)
+	r.Use(middlewareLatency(prometheusMetrics))
 
 	// public auth router group
 	r.Group(func(r chi.Router) {

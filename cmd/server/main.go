@@ -48,7 +48,7 @@ func main() {
 		app.Logger.Fatal("error setting http server", zap.Error(err))
 	}
 
-	// // Setup the GRPC Server
+	// Setup the GRPC Server
 	err = app.SetGRPCServer()
 	if err != nil {
 		app.Logger.Fatal("error setting grpc server", zap.Error(err))
@@ -56,7 +56,7 @@ func main() {
 
 	wg, ctx := errgroup.WithContext(ctx)
 
-	// run server
+	// run servers
 	app.HttpServer.Run(ctx, wg)
 	app.GrpcServer.Run(ctx, wg)
 

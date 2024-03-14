@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"gitlab.com/beabys/go-http-template/internal/app/config"
 	helloworld "gitlab.com/beabys/go-http-template/internal/hello_world"
 	"gitlab.com/beabys/go-http-template/pkg/logger"
@@ -13,6 +14,10 @@ import (
 
 	hwproto "gitlab.com/beabys/go-http-template/proto/gen/go/hello_world/v1"
 )
+
+type PrometheusMetrics struct {
+	latency *prometheus.SummaryVec
+}
 
 // HttpServer is a struct of an Http Server
 type HttpServer struct {

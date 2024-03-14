@@ -36,7 +36,6 @@ func (gs *GRPCServer) SetHelloWorldService(hw helloworld.HelloWorldIntereface) *
 
 // Run implements Run api server function for gRPC server
 func (gs *GRPCServer) Run(ctx context.Context, wg *errgroup.Group) {
-
 	wg.Go(func() error {
 		gs.Logger.Info("grpc server started")
 		if err := gs.Server.Serve(gs.Listener); err != nil {
