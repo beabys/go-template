@@ -30,17 +30,17 @@ func main() {
 		panic(err)
 	}
 
-	// Connect to Mysql
-	err = app.MysqlClient.Connect()
-	if err != nil {
-		app.Logger.Fatal("error setting Mysql client", zap.Error(err))
-	}
+	// // Connect to Mysql
+	// err = app.MysqlClient.Connect()
+	// if err != nil {
+	// 	app.Logger.Fatal("error setting Mysql client", zap.Error(err))
+	// }
 
-	// Connect to Redis
-	err = app.RedisClient.Connect()
-	if err != nil {
-		app.Logger.Fatal("error setting Mysql client", zap.Error(err))
-	}
+	// // Connect to Redis
+	// err = app.RedisClient.Connect()
+	// if err != nil {
+	// 	app.Logger.Fatal("error setting Mysql client", zap.Error(err))
+	// }
 
 	// Setup the http Server
 	err = app.SetHTTPServer()
@@ -48,17 +48,17 @@ func main() {
 		app.Logger.Fatal("error setting http server", zap.Error(err))
 	}
 
-	// Setup the GRPC Server
-	err = app.SetGRPCServer()
-	if err != nil {
-		app.Logger.Fatal("error setting grpc server", zap.Error(err))
-	}
+	// // Setup the GRPC Server
+	// err = app.SetGRPCServer()
+	// if err != nil {
+	// 	app.Logger.Fatal("error setting grpc server", zap.Error(err))
+	// }
 
 	wg, ctx := errgroup.WithContext(ctx)
 
 	// run servers
 	app.HttpServer.Run(ctx, wg)
-	app.GrpcServer.Run(ctx, wg)
+	// app.GrpcServer.Run(ctx, wg)
 
 	err = wg.Wait()
 	if err != nil {
