@@ -30,11 +30,10 @@ func NewMuxHandler(server *HttpServer) (http.Handler, error) {
 	prometheus.MustRegister(prometheusMetrics.latency)
 
 	// default middlewars
-	r.NotFound(NotFound)
+	r.NotFound(notFound)
 	r.Use(middleware.Recoverer)
-	r.Use(middleware.NoCache)
-	r.Use(middleware.StripSlashes)
-	r.Use(middlewareLatency(prometheusMetrics))
+	r.Use(middleware.RealIP)
+	r.Use(middlewareMetrics(server.Logger, prometheusMetrics))
 
 	// public auth router group
 	r.Group(func(r chi.Router) {
@@ -57,16 +56,21 @@ func NewMuxHandler(server *HttpServer) (http.Handler, error) {
 		}))
 
 		// Mount oapi routes
-		r.Mount("/", v1.HandlerWithOptions(server, v1.ChiServerOptions{
+		v1.HandlerWithOptions(server, v1.ChiServerOptions{
 			BaseRouter: r,
 			ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
 				errorResponseJSON(w, http.StatusInternalServerError, err)
 			},
-		}))
+		})
 
 	})
 
 	return r, nil
+}
+
+// Not found Middleware
+func notFound(w http.ResponseWriter, r *http.Request) {
+	errorResponseJSON(w, http.StatusNotFound, errors.New("not found"))
 }
 
 func DefaultError(w http.ResponseWriter, r *http.Request, err error) {
@@ -79,9 +83,4 @@ func JsonContentType(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	}
 	return http.HandlerFunc(fn)
-}
-
-// Not found Middleware
-func NotFound(w http.ResponseWriter, r *http.Request) {
-	errorResponseJSON(w, http.StatusNotFound, errors.New("not found"))
 }

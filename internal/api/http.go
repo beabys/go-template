@@ -51,7 +51,7 @@ func (hs *HttpServer) Run(ctx context.Context, wg *errgroup.Group) {
 
 	wg.Go(func() error {
 		<-ctx.Done()
-		hs.Logger.Info("shutting down gracefully http server start")
+		hs.Logger.Info("shutting down gracefully http server")
 		ctxTimeout, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		if err := hs.Server.Shutdown(ctxTimeout); err != nil {
