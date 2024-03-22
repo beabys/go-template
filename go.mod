@@ -4,7 +4,6 @@ go 1.22.0
 
 require (
 	github.com/getkin/kin-openapi v0.123.0
-	github.com/go-chi/chi v1.5.5
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/go-chi/cors v1.2.1
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
@@ -16,7 +15,7 @@ require (
 	go.uber.org/zap v1.21.0
 	golang.org/x/sync v0.5.0
 	google.golang.org/grpc v1.59.0
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/protobuf v1.33.0
 	gotest.tools v2.2.0+incompatible
 )
 
