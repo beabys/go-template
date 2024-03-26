@@ -1,6 +1,6 @@
 module gitlab.com/beabys/go-http-template
 
-go 1.22.0
+go 1.21.0
 
 require (
 	github.com/getkin/kin-openapi v0.123.0
