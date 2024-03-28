@@ -86,7 +86,7 @@ func (app *App) Setup(configs config.AppConfig) error {
 		LogSQL:          config.DB.LogSQL,
 		MaxIdleConns:    config.DB.MaxIdleConns,
 		MaxOpenConn:     config.DB.MaxOpenConn,
-		ConnMaxLifetime: config.DB.ConnMaxLifetime,
+		ConnMaxLifetime: time.Duration(config.DB.ConnMaxLifetime) * time.Second,
 	}
 	mysql := database.NewMysql(mysqlConfig)
 	app.SetMysqlClient(mysql)

@@ -1,7 +1,5 @@
 package config
 
-import "time"
-
 type AppConfig interface {
 	LoadConfigs() error
 	GetConfigs() *Config
@@ -29,15 +27,15 @@ type Http struct {
 
 // MysqlConfigurations is a struct to define configurations of the db connection
 type Database struct {
-	Username        string        `mapstructure:"user"`
-	Password        string        `mapstructure:"password"`
-	Host            string        `mapstructure:"host"`
-	Port            int           `mapstructure:"port"`
-	DBName          string        `mapstructure:"name"`
-	LogSQL          bool          `mapstructure:"log_sql"`
-	MaxIdleConns    int           `mapstructure:"max_idle_connections"`
-	MaxOpenConn     int           `mapstructure:"max_open_conn"`
-	ConnMaxLifetime time.Duration `mapstructure:"connection_max_lifetime"`
+	Username        string `mapstructure:"user"`
+	Password        string `mapstructure:"password"`
+	Host            string `mapstructure:"host"`
+	Port            int    `mapstructure:"port"`
+	DBName          string `mapstructure:"name"`
+	LogSQL          bool   `mapstructure:"log_sql"`
+	MaxIdleConns    int    `mapstructure:"max_idle_connections"`
+	MaxOpenConn     int    `mapstructure:"max_open_conn"`
+	ConnMaxLifetime int    `mapstructure:"connection_max_lifetime_seconds"`
 }
 
 // Redis is a struct to define configurations for Redis
