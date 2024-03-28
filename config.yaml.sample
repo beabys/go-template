@@ -14,7 +14,7 @@ db:
     log_sql: true
     max_idle_connections: 5
     max_open_conn: 5
-    connection_max_lifetime: 10s
+    connection_max_lifetime_seconds: 10
 redis:
     password: password
     host: 127.0.0.1
