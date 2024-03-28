@@ -1,8 +1,7 @@
 package config
 
 import (
-	"github.com/spf13/viper"
-	"gitlab.com/beabys/quetzal/config"
+	config "gitlab.com/beabys/ayotl"
 )
 
 // New return  a New Config
@@ -16,7 +15,9 @@ func (c *Config) GetConfigs() *Config {
 
 // LoadConfig is a function to load the configuration, stored on the config files
 func (c *Config) LoadConfigs() error {
-	baseConfig := config.New().SetConfigImpl(c)
+	baseConfig := config.New().
+		SetConfigImpl(c).
+		LoadEnv()
 	configFile := baseConfig.MustString("CONFIG_FILE", "/etc/config/config.yaml")
 	err := baseConfig.LoadConfigs(c, configFile)
 	if err != nil {
@@ -25,6 +26,7 @@ func (c *Config) LoadConfigs() error {
 	return nil
 }
 
-func (c *Config) SetDefaults(v *viper.Viper) {
-
+func (c *Config) SetDefaults() config.ConfigMap {
+	defaults := make(config.ConfigMap)
+	return defaults
 }
