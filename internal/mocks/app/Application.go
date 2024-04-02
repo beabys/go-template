@@ -5,9 +5,9 @@ package mocks
 import (
 	context "context"
 
-	config "gitlab.com/beabys/go-http-template/internal/app/config"
+	config "gitlab.com/beabys/go-template/internal/app/config"
 
-	logger "gitlab.com/beabys/go-http-template/pkg/logger"
+	logger "gitlab.com/beabys/go-template/pkg/logger"
 
 	mock "github.com/stretchr/testify/mock"
 )

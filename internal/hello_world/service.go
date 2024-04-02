@@ -3,8 +3,8 @@ package helloworld
 import (
 	"context"
 
-	"gitlab.com/beabys/go-http-template/internal/domain/model"
-	"gitlab.com/beabys/go-http-template/pkg/logger"
+	"gitlab.com/beabys/go-template/internal/domain/model"
+	"gitlab.com/beabys/go-template/pkg/logger"
 )
 
 func NewHelloWorld(logger logger.Logger) *HelloWorld {
