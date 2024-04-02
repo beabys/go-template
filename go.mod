@@ -1,4 +1,4 @@
-module gitlab.com/beabys/go-http-template
+module gitlab.com/beabys/go-template
 
 go 1.22.0
 

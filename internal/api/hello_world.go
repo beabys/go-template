@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	hwproto "gitlab.com/beabys/go-http-template/proto/gen/go/hello_world/v1"
+	hwproto "gitlab.com/beabys/go-template/proto/gen/go/hello_world/v1"
 )
 
 // Used to implement the methods of helloworld interface

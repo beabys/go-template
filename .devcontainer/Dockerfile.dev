@@ -19,7 +19,7 @@ RUN echo "parse_git_branch() {" >> /home/dev/.bashrc && \
     echo "}" >> /home/dev/.bashrc && \
     echo "export PS1=\"\\u@\\h \[\\\e[32m\\]\w \\[\\\e[91m\\]\\\$(parse_git_branch)\\[\\\e[00m\\]\$ \"" >> /home/dev/.bashrc && \
     echo "source /usr/share/bash-completion/completions/git" >> /home/dev/.bashrc && \
-    echo "cd /go/src/gitlab.com/beabys/go-http-template" >>/home/dev/.bashrc
+    echo "cd /go/src/gitlab.com/beabys/go-template" >>/home/dev/.bashrc
 
 
 # Persist bash history

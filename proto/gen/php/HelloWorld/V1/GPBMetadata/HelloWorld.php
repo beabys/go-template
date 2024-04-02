@@ -16,13 +16,13 @@ class HelloWorld
         }
         $pool->internalAddGeneratedFile(
             '
-Ú
+Õ
  hello_world/v1/hello_world.protohello_world.v1"\'
 HelloWorldRequest
 name (	Rname"*
 HelloWorldResponse
-hello (	RhelloBÈ
-com.hello_world.v1BHelloWorldProtoPZLgitlab.com/beabys/go-http-template/proto/gen/go/hello_world/v1;hello_worldv1¢HXXªHelloWorld.V1ÊHelloWorld\\V1âHelloWorld\\V1\\GPBMetadataêHelloWorld::V1bproto3'
+hello (	RhelloBÃ
+com.hello_world.v1BHelloWorldProtoPZGgitlab.com/beabys/go-template/proto/gen/go/hello_world/v1;hello_worldv1¢HXXªHelloWorld.V1ÊHelloWorld\\V1âHelloWorld\\V1\\GPBMetadataêHelloWorld::V1bproto3'
         , true);
 
         static::$is_initialized = true;

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	v1 "gitlab.com/beabys/go-http-template/internal/api/v1"
+	v1 "gitlab.com/beabys/go-template/internal/api/v1"
 )
 
 func errorResponse(err error) v1.Error {

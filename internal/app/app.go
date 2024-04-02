@@ -14,19 +14,19 @@ import (
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	"gitlab.com/beabys/go-http-template/internal/api"
-	"gitlab.com/beabys/go-http-template/internal/app/config"
-	"gitlab.com/beabys/go-http-template/internal/app/database"
-	helloworld "gitlab.com/beabys/go-http-template/internal/hello_world"
-	"gitlab.com/beabys/go-http-template/internal/utils"
-	"gitlab.com/beabys/go-http-template/pkg/logger"
+	"gitlab.com/beabys/go-template/internal/api"
+	"gitlab.com/beabys/go-template/internal/app/config"
+	"gitlab.com/beabys/go-template/internal/app/database"
+	helloworld "gitlab.com/beabys/go-template/internal/hello_world"
+	"gitlab.com/beabys/go-template/internal/utils"
+	"gitlab.com/beabys/go-template/pkg/logger"
 	"gitlab.com/beabys/quetzal"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 
-	hwproto "gitlab.com/beabys/go-http-template/proto/gen/go/hello_world/v1"
+	hwproto "gitlab.com/beabys/go-template/proto/gen/go/hello_world/v1"
 )
 
 // New returns a new App struct

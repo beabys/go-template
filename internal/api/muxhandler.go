@@ -10,7 +10,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	v1 "gitlab.com/beabys/go-http-template/internal/api/v1"
+	v1 "gitlab.com/beabys/go-template/internal/api/v1"
 )
 
 func NewMuxHandler(server *HttpServer) (http.Handler, error) {
