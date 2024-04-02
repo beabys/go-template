@@ -15,12 +15,8 @@ func (c *Config) GetConfigs() *Config {
 
 // LoadConfig is a function to load the configuration, stored on the config files
 func (c *Config) LoadConfigs() error {
-	baseConfig := config.New().
-		SetConfigImpl(c).
-		LoadEnv()
-	configFile := baseConfig.MustString("CONFIG_FILE", "/etc/config/config.yaml")
-	err := baseConfig.LoadConfigs(c, configFile)
-	if err != nil {
+	bc := config.New().SetConfigImpl(c).WithEnv()
+	if err := bc.LoadConfigs(c, bc.MustString("CONFIG_FILE", "")); err != nil {
 		return err
 	}
 	return nil
