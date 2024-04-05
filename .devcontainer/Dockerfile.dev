@@ -19,11 +19,12 @@ RUN echo "parse_git_branch() {" >> /home/dev/.bashrc && \
     echo "}" >> /home/dev/.bashrc && \
     echo "export PS1=\"\\u@\\h \[\\\e[32m\\]\w \\[\\\e[91m\\]\\\$(parse_git_branch)\\[\\\e[00m\\]\$ \"" >> /home/dev/.bashrc && \
     echo "source /usr/share/bash-completion/completions/git" >> /home/dev/.bashrc && \
+    echo "export PATH=/usr/local/go/bin:$PATH" >>/home/dev/.bashrc && \
+    # Persist bash history
+    echo "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" >>/home/dev/.bashrc && \
     echo "cd /go/src/gitlab.com/beabys/go-template" >>/home/dev/.bashrc
 
 
-# Persist bash history
-RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history"
 
 RUN mkdir /commandhistory
 RUN chown dev /commandhistory
