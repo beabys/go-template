@@ -10,6 +10,9 @@ docs/
 config.yaml
 .env
 
+/binaries
+/deb_build
+
 # mysql
 /builds/mysql/.*
 /builds/redis/.*
