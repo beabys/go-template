@@ -140,7 +140,8 @@ func (a *App) SetGRPCServer() error {
 	helloWorldService := helloworld.NewHelloWorld(a.Logger)
 
 	configs := a.Config.GetConfigs()
-	listener, err := net.Listen("tcp", ":"+strconv.Itoa(configs.Grpc.Port))
+	address := ":" + strconv.Itoa(configs.Grpc.Port)
+	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		return utils.BindError(errors.New("failed to get grpc listener"), err)
 	}
@@ -180,6 +181,7 @@ func (a *App) SetGRPCServer() error {
 	hwproto.RegisterHelloWorldServiceServer(rpcServer, server)
 	reflection.Register(rpcServer)
 
+	a.Logger.Info("setup gRPC server ", zap.String("address", address))
 	server.Listener = listener
 	server.Server = rpcServer
 

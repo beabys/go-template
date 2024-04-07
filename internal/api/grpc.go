@@ -50,7 +50,7 @@ func (gs *GRPCServer) Run(ctx context.Context, wg *errgroup.Group) {
 
 	wg.Go(func() error {
 		<-ctx.Done()
-		gs.Logger.Info("shutting down gracefully grpc server start")
+		gs.Logger.Info("shutting down gracefully grpc server")
 		gs.Server.GracefulStop()
 		return nil
 	})
