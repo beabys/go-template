@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: go-http-template-configmap
+  name: go-template-configmap
 data:
   config.yaml: |
     stage: development
@@ -16,7 +16,7 @@ data:
         password: password
         host: host.minikube.internal
         port: 33061
-        name: go-http-template
+        name: go-template
         log_sql: true
         max_idle_connections: 5
         max_open_conn: 5

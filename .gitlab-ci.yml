@@ -62,7 +62,7 @@ build_image:
   script:
     - docker buildx create --use
     # - docker buildx build -f ./build/app/Dockerfile --platform linux/arm/v7,linux/arm64,linux/amd64 -t $CI_REGISTRY/beabys/starwars-go:latest --push .
-    - docker buildx build -f ./builds/app/Dockerfile --platform linux/arm64,linux/amd64 -t $CI_REGISTRY/beabys/go-http-template:$CI_COMMIT_TAG --push .
+    - docker buildx build -f ./builds/app/Dockerfile --platform linux/arm64,linux/amd64 -t $CI_REGISTRY/beabys/go-template:$CI_COMMIT_TAG --push .
   after_script:
     - docker logout $CI_REGISTRY
   only:

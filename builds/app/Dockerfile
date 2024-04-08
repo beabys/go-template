@@ -3,7 +3,7 @@ WORKDIR /app
 COPY . .
 RUN go mod download
 # Build the app
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o go-http-template ./cmd/server/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o go-template ./cmd/server/main.go
 
 # Use another container after app is build
 FROM alpine:latest
@@ -17,7 +17,7 @@ RUN adduser \
     --uid 10000 \
     appuser
 
-COPY --from=builder /app/go-http-template .
+COPY --from=builder /app/go-template .
 
 RUN mkdir -p /etc/config
 
@@ -27,4 +27,4 @@ USER 10000
 EXPOSE 3001
 
 # Run the compiled app
-CMD ["/go-http-template"]
+CMD ["/go-template"]

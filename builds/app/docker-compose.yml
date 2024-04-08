@@ -1,8 +1,8 @@
 version: '2.1'
 
 services:
-  go-http-template:
-    container_name: go-http-template
+  go-template:
+    container_name: go-template
     image: test-server
     env_file:
       - ../../.env

@@ -1,33 +1,33 @@
 version: '2.1'
 
 services:
-  go-http-template:
+  go-template:
     extends:
       file: app/docker-compose.yml
-      service: go-http-template
+      service: go-template
     env_file:
       - ../.env
     networks:
-      - go-http-template-service
+      - go-template-service
     depends_on: 
-      - go-http-template-db
-  go-http-template-db:
+      - go-template-db
+  go-template-db:
     extends:
       file: mysql/docker-compose.yml
-      service: go-http-template-db
+      service: go-template-db
     volumes:
         # - ../builds/mysql/dump:/docker-entrypoint-initdb.d
         - ../builds/mysql/.mariadb:/var/lib/mysql
     networks:
-      - go-http-template-service
-  go-http-template-redis:
+      - go-template-service
+  go-template-redis:
     extends:
       file: redis/docker-compose.yml
-      service: go-http-template-redis
+      service: go-template-redis
     volumes:
       - ../builds/redis/.redis:/data/
     networks:
-      - go-http-template-service
+      - go-template-service
 networks:
-  go-http-template-service:
+  go-template-service:
     driver: bridge
