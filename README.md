@@ -1,4 +1,4 @@
-# go-http-template
+# go-template
 
 ## Requirements
 
@@ -9,7 +9,7 @@
 ## Project structure
 
 ```
-go-http-template
+go-template
 ├── builds
 ├── cmd
 │   └── server              # Main File(s)

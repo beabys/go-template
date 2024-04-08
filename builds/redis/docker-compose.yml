@@ -1,9 +1,9 @@
 version: '2.1'
 
 services:
-  go-http-template-redis:
+  go-template-redis:
     restart: always
-    container_name: go-http-template-redis
+    container_name: go-template-redis
     image: redis:alpine
     command: redis-server --requirepass 123456
     ports:

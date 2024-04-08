@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: go-http-template-deployment
+  name: go-template-deployment
   labels:
-    app: go-http-template
+    app: go-template
 spec:
   selector:
     matchLabels:
-      app: go-http-template
+      app: go-template
   replicas: 2
   template:
     spec:
       containers:
-      - name: go-http-template
+      - name: go-template
         imagePullPolicy: IfNotPresent
         resources:
           requests:

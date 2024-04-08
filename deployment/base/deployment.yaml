@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: go-http-template-deployment
+  name: go-template-deployment
   labels:
-    app: go-http-template
+    app: go-template
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: go-http-template
+      app: go-template
   template:
     metadata:
       labels:
-        app: go-http-template
+        app: go-template
     spec:
       securityContext:
         seccompProfile:
@@ -22,8 +22,8 @@ spec:
         runAsNonRoot: true
         fsGroup: 20000
       containers:
-      - name: go-http-template
-        image: go-http-template
+      - name: go-template
+        image: go-template
         imagePullPolicy: Always
         securityContext:
           readOnlyRootFilesystem: true
@@ -41,7 +41,7 @@ spec:
         - name: CONFIG_FILE
           valueFrom:
             configMapKeyRef:
-              name: go-http-template-config
+              name: go-template-config
               key: config_file_path
         resources:
             requests:
@@ -52,9 +52,9 @@ spec:
               memory: '200Mi'
         volumeMounts:
           - mountPath: "/etc/config"
-            name: go-http-template-config-volume
+            name: go-template-config-volume
       volumes:
-        - name: go-http-template-config-volume
+        - name: go-template-config-volume
           configMap:
-            name: go-http-template-configmap
+            name: go-template-configmap
 

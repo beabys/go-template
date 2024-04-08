@@ -7,7 +7,7 @@ resources:
 - hpa.yaml
 
 configMapGenerator:
-- name: go-http-template-config
+- name: go-template-config
   literals:
   - config_file_path=/etc/config/config.yaml
 
@@ -20,4 +20,4 @@ generatorOptions:
 labels:
 - includeSelectors: true
   pairs:
-    app: go-http-template
+    app: go-template

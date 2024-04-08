@@ -1,14 +1,14 @@
 version: '2.1'
 
 services:
-  go-http-template-db:
+  go-template-db:
     image: mariadb
-    container_name: go-http-template-db
+    container_name: go-template-db
     ports: 
         - "33061:3306"
     restart: always
     environment:
-        MYSQL_DATABASE: go-http-template-db
+        MYSQL_DATABASE: go-template-db
         MYSQL_USER: dev
         MYSQL_PASSWORD: 123456
         MYSQL_ROOT_PASSWORD: 123456
