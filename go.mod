@@ -10,7 +10,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/prometheus/client_golang v1.18.0
 	github.com/stretchr/testify v1.9.0
-	gitlab.com/beabys/ayotl v0.0.9
+	gitlab.com/beabys/ayotl v0.0.10
 	gitlab.com/beabys/quetzal v0.0.11
 	go.uber.org/zap v1.21.0
 	golang.org/x/sync v0.5.0

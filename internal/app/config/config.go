@@ -21,7 +21,9 @@ func (c *Config) LoadConfigs() error {
 	if err := bc.LoadConfigs(c, bc.MustString(CONFIG_FILE, "")); err != nil {
 		return err
 	}
-	return nil
+
+	// Unmarshal loaded configs into Config struct
+	return bc.Unmarshal(c)
 }
 
 func (c *Config) SetDefaults() config.ConfigMap {
