@@ -18,7 +18,7 @@ func (c *Config) GetConfigs() *Config {
 // LoadConfig is a function to load the configuration, stored on the config files
 func (c *Config) LoadConfigs() error {
 	bc := config.New().SetConfigImpl(c).WithEnv(CONFIG_FILE)
-	if err := bc.LoadConfigs(c, bc.MustString(CONFIG_FILE, "")); err != nil {
+	if err := bc.LoadConfigs(bc.MustString(CONFIG_FILE, "")); err != nil {
 		return err
 	}
 
