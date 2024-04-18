@@ -133,8 +133,8 @@ github.com/ugorji/go/codec v1.2.7/go.mod h1:WGN1fab3R1fzQlVQTkfxVtIBhWDRqOviHU95
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
-gitlab.com/beabys/ayotl v0.0.9 h1:vCpoQuKjlqXVKyiMjkkl/MsGx5FrqOBNQKbN/xoN5MI=
-gitlab.com/beabys/ayotl v0.0.9/go.mod h1:+O2oW+ifCR1papFJlzo/cRFaNnv0SSNC+Riwwh4bb0E=
+gitlab.com/beabys/ayotl v0.0.10 h1:Xu60f1gVNevNy9ewxl3D3l4ka/AtcQgs/iPTkqTflkk=
+gitlab.com/beabys/ayotl v0.0.10/go.mod h1:+O2oW+ifCR1papFJlzo/cRFaNnv0SSNC+Riwwh4bb0E=
 gitlab.com/beabys/quetzal v0.0.11 h1:+YBB6Kr+bKvo+QJHKU8tHKKwBXaHTq7li89vO8JAgUo=
 gitlab.com/beabys/quetzal v0.0.11/go.mod h1:y99mIq8VYnY37LN54lme2uEBykZORzCQr6eJGzSperg=
 go.uber.org/atomic v1.7.0/go.mod h1:fEN4uk6kAWBTFdckzkM89CLk9XfWZrxpCo0nPH17wJc=
