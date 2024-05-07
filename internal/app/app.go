@@ -14,9 +14,9 @@ import (
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	"gitlab.com/beabys/go-template/internal/api"
 	"gitlab.com/beabys/go-template/internal/app/config"
 	"gitlab.com/beabys/go-template/internal/app/database"
+	"gitlab.com/beabys/go-template/internal/app/server"
 	helloworld "gitlab.com/beabys/go-template/internal/hello_world"
 	"gitlab.com/beabys/go-template/internal/utils"
 	"gitlab.com/beabys/go-template/pkg/logger"
@@ -109,13 +109,13 @@ func (a *App) SetHTTPServer() error {
 	helloWorldService := helloworld.NewHelloWorld(a.Logger)
 
 	configs := a.Config.GetConfigs()
-	server := api.NewHttpServer().
+	httpServer := server.NewHttpServer().
 		SetConfig(configs).
 		SetLogger(a.Logger).
 		// TODO this should be changes according new implementations
 		SetHelloWorldService(helloWorldService)
 
-	h, err := api.NewMuxHandler(server)
+	h, err := server.NewMuxHandler(httpServer)
 	if err != nil {
 		return err
 	}
@@ -124,13 +124,13 @@ func (a *App) SetHTTPServer() error {
 
 	a.Logger.Info("setup http server ", zap.String("address", address))
 
-	server.Server = &http.Server{
+	httpServer.Server = &http.Server{
 		Addr:              address,
 		Handler:           h,
 		ReadHeaderTimeout: time.Duration(30 * 1000),
 	}
 
-	a.HttpServer = server
+	a.HttpServer = httpServer
 
 	return nil
 }
@@ -145,7 +145,7 @@ func (a *App) SetGRPCServer() error {
 	if err != nil {
 		return utils.BindError(errors.New("failed to get grpc listener"), err)
 	}
-	server := api.NewGRPCServer().
+	server := server.NewGRPCServer().
 		SetConfig(configs).
 		SetLogger(a.Logger).
 

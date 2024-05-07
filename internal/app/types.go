@@ -3,9 +3,9 @@ package app
 import (
 	"context"
 
-	"gitlab.com/beabys/go-template/internal/api"
 	"gitlab.com/beabys/go-template/internal/app/config"
 	"gitlab.com/beabys/go-template/internal/app/database"
+	"gitlab.com/beabys/go-template/internal/app/server"
 	"gitlab.com/beabys/go-template/pkg/logger"
 )
 
@@ -22,6 +22,6 @@ type App struct {
 	Logger      logger.Logger
 	MysqlClient *database.Mysql
 	RedisClient *database.Redis
-	HttpServer  api.ApiServer
-	GrpcServer  api.ApiServer
+	HttpServer  server.ApiServer
+	GrpcServer  server.ApiServer
 }
