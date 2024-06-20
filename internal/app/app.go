@@ -125,9 +125,10 @@ func (a *App) SetHTTPServer() error {
 	a.Logger.Info("setup http server ", zap.String("address", address))
 
 	server.Server = &http.Server{
-		Addr:              address,
-		Handler:           h,
-		ReadHeaderTimeout: time.Duration(30 * 1000),
+		Addr:    address,
+		Handler: h,
+		// by default set ReadHeaderTimeout to 0.5 secs.
+		ReadHeaderTimeout: time.Duration(time.Second / 2),
 	}
 
 	a.HttpServer = server
