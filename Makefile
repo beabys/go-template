@@ -41,7 +41,7 @@ mysql-down:
 
 .PHONY: mockery
 mockery:
-	mockery --dir=internal --all --recursive --keeptree --output=./internal/mocks && go mod tidy
+	mockery && go mod tidy
 
 .PHONY: unit
 unit:
