@@ -45,7 +45,7 @@ mockery:
 
 .PHONY: unit
 unit:
-	go mod tidy && go test ./internal/... -race -coverprofile .testCoverage.txt
+	go mod tidy && go test $(shell go list ./internal/... | grep -v /mocks) -race -coverprofile .testCoverage.txt
 
 .PHONY: unit-coverage
 unit-coverage: unit ## Runs unit tests and generates a html coverage report
