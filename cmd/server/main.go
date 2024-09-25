@@ -36,11 +36,11 @@ func main() {
 		app.Logger.Fatal("error setting Mysql client", zap.Error(err))
 	}
 
-	// Connect to Redis
-	err = app.RedisClient.Connect()
-	if err != nil {
-		app.Logger.Fatal("error setting Mysql client", zap.Error(err))
-	}
+	// // Connect to Redis
+	// err = app.RedisClient.Connect()
+	// if err != nil {
+	// 	app.Logger.Fatal("error setting Redis client", zap.Error(err))
+	// }
 
 	// Setup the http Server
 	err = app.SetHTTPServer()

@@ -5,7 +5,7 @@ import (
 
 	"gitlab.com/beabys/go-template/internal/api"
 	"gitlab.com/beabys/go-template/internal/app/config"
-	"gitlab.com/beabys/go-template/internal/app/database"
+	"gitlab.com/beabys/go-template/pkg/database"
 	"gitlab.com/beabys/go-template/pkg/logger"
 )
 
@@ -20,8 +20,8 @@ type Application interface {
 type App struct {
 	Config      config.AppConfig
 	Logger      logger.Logger
-	MysqlClient *database.Mysql
-	RedisClient *database.Redis
-	HttpServer  api.ApiServer
-	GrpcServer  api.ApiServer
+	MysqlClient database.Database
+	// RedisClient *database.Redis
+	HttpServer api.ApiServer
+	GrpcServer api.ApiServer
 }
