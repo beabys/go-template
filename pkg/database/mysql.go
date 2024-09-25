@@ -24,10 +24,6 @@ func (m *Mysql) SetSqlDB(s *sql.DB) *Mysql {
 	return m
 }
 
-func (m *Mysql) GetDBConnection() any {
-	return m.SqlDB
-}
-
 // Connect Create the connection with Mysql Adapter
 func (m *Mysql) Connect() error {
 
@@ -73,7 +69,7 @@ func (m *Mysql) Connect() error {
 	}
 	db.DB.SetMaxOpenConns(maxOpenConn)
 
-	// // SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
+	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
 	if m.config.ConnMaxLifetime > 0 {
 		duration := m.config.ConnMaxLifetime
 		timeDuration := time.Duration(time.Duration.Seconds(duration))
@@ -103,4 +99,8 @@ func (m *Mysql) Close() error {
 		return err
 	}
 	return nil
+}
+
+func (m *Mysql) GetDBImpl() any {
+	return m
 }

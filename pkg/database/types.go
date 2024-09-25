@@ -11,7 +11,7 @@ type Database interface {
 	Connect() error
 	Ping() error
 	Close() error
-	GetDBConnection() any
+	GetDBImpl() any
 }
 
 // Mysql type to connect to Mysql using Gorm
