@@ -36,18 +36,13 @@ func (m *Mysql) Connect() error {
 
 	db, err := sqlx.Connect("mysql", stringConnection)
 	if err != nil {
-		return err
-	}
-	if db == nil {
-		if err != nil {
-			for i := 0; i < m.config.ConnectionRetries; i++ {
-				time.Sleep(time.Second * time.Duration(i+1))
-				db, err = sqlx.Connect("mysql", stringConnection)
-				if err != nil {
-					continue
-				}
-				break
+		for i := 0; i < m.config.ConnectionRetries; i++ {
+			time.Sleep(time.Second * time.Duration(i+1))
+			db, err = sqlx.Connect("mysql", stringConnection)
+			if err != nil {
+				continue
 			}
+			break
 		}
 	}
 
