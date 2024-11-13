@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"gitlab.com/beabys/go-template/internal/domain/model"
+	"gitlab.com/beabys/go-template/internal/hello_world/repository"
 	"gitlab.com/beabys/go-template/pkg/logger"
 )
 
@@ -12,5 +13,6 @@ type HelloWorldIntereface interface {
 }
 
 type HelloWorld struct {
-	logger logger.Logger
+	logger     logger.Logger
+	repository repository.RepositoryIntereface
 }

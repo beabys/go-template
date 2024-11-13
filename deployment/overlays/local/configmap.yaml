@@ -6,7 +6,7 @@ data:
   config.yaml: |
     stage: development
     grpc:
-        port: 3001
+        port: 5001
     http:
         host: 127.0.0.1
         port: 3001

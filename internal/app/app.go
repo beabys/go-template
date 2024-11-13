@@ -16,11 +16,11 @@ import (
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"gitlab.com/beabys/go-template/internal/api"
 	"gitlab.com/beabys/go-template/internal/app/config"
-	"gitlab.com/beabys/go-template/internal/app/database"
 	helloworld "gitlab.com/beabys/go-template/internal/hello_world"
+	"gitlab.com/beabys/go-template/internal/hello_world/repository"
 	"gitlab.com/beabys/go-template/internal/utils"
+	"gitlab.com/beabys/go-template/pkg/database"
 	"gitlab.com/beabys/go-template/pkg/logger"
-	"gitlab.com/beabys/quetzal"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
@@ -51,13 +51,13 @@ func (app *App) GetLogger() logger.Logger {
 	return app.Logger
 }
 
-func (app *App) SetMysqlClient(m *database.Mysql) {
+func (app *App) SetMysqlClient(m database.Database) {
 	app.MysqlClient = m
 }
 
-func (app *App) SetRedisClient(r *database.Redis) {
-	app.RedisClient = r
-}
+// func (app *App) SetRedisClient(r *database.Redis) {
+// 	app.RedisClient = r
+// }
 
 func (app *App) Setup(configs config.AppConfig) error {
 	err := app.SetConfigs(configs)
@@ -77,7 +77,7 @@ func (app *App) Setup(configs config.AppConfig) error {
 	app.SetLogger(logger)
 
 	// Mysql Client
-	mysqlConfig := &quetzal.MysqlConfig{
+	mysqlConfig := &database.MysqlConfig{
 		Username:        config.DB.Username,
 		Password:        config.DB.Password,
 		Host:            config.DB.Host,
@@ -88,25 +88,28 @@ func (app *App) Setup(configs config.AppConfig) error {
 		MaxOpenConn:     config.DB.MaxOpenConn,
 		ConnMaxLifetime: time.Duration(config.DB.ConnMaxLifetime) * time.Second,
 	}
-	mysql := database.NewMysql(mysqlConfig)
+	mysql := database.New().SetConfigs(mysqlConfig)
+
 	app.SetMysqlClient(mysql)
 
-	//Redis
-	redisConfig := &quetzal.RedisConfig{
-		Host:     config.Redis.Host,
-		Password: config.Redis.Password,
-		Port:     config.Redis.Port,
-		DBNumber: config.Redis.DBNumber,
-	}
-	redis := database.NewRedis(redisConfig)
-	app.SetRedisClient(redis)
+	// //Redis
+	// redisConfig := &quetzal.RedisConfig{
+	// 	Host:     config.Redis.Host,
+	// 	Password: config.Redis.Password,
+	// 	Port:     config.Redis.Port,
+	// 	DBNumber: config.Redis.DBNumber,
+	// }
+	// redis := database.NewRedis(redisConfig)
+	// app.SetRedisClient(redis)
 
 	return nil
 }
 
 func (a *App) SetHTTPServer() error {
+
 	// init service dependencies here
-	helloWorldService := helloworld.NewHelloWorld(a.Logger)
+	helloWorldRepository := repository.NewHelloRepository(a.Logger, a.MysqlClient)
+	helloWorldService := helloworld.NewHelloWorld(a.Logger, helloWorldRepository)
 
 	configs := a.Config.GetConfigs()
 	server := api.NewHttpServer().
@@ -138,7 +141,8 @@ func (a *App) SetHTTPServer() error {
 
 func (a *App) SetGRPCServer() error {
 	// init service dependencies here
-	helloWorldService := helloworld.NewHelloWorld(a.Logger)
+	helloWorldRepository := repository.NewHelloRepository(a.Logger, a.MysqlClient)
+	helloWorldService := helloworld.NewHelloWorld(a.Logger, helloWorldRepository)
 
 	configs := a.Config.GetConfigs()
 	address := ":" + strconv.Itoa(configs.Grpc.Port)
