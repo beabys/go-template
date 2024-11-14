@@ -12,7 +12,7 @@ import (
 func errorResponse(err error) v1.Error {
 	errResponse := v1.Error{}
 	errMsg := err.Error()
-	errResponse.Data.Msg = &errMsg
+	errResponse.Data.Error = &errMsg
 	return errResponse
 }
 

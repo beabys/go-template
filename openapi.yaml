@@ -90,5 +90,5 @@ components:
           required:
             - "success"
           properties:
-            msg:
+            error:
               type: string

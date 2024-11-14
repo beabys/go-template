@@ -27,7 +27,7 @@ const (
 // Error defines model for Error.
 type Error struct {
 	Data struct {
-		Msg *string `json:"msg,omitempty"`
+		Error *string `json:"error,omitempty"`
 	} `json:"data"`
 	Success bool `json:"success"`
 }
@@ -464,14 +464,14 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 var swaggerSpec = []string{
 
 	"H4sIAAAAAAAC/7SUzW7bMAzHX0XgdvTqdOsuuq3A2vXSQ3JYgSAH1WYSFbKoUXS2IPC7D5LtBOlStMDS",
-	"U2KK/OnPL+2goiaQRy8R9A4YYyAfMX9cm3qKv1qMMh3MyVqRF/SS/poQnK2MWPLlUySfbPjHNMFlz9qI",
-	"ySZmYtCJp7gHQldAbKsKYwS9NC5iMlRrbHLER8YlaPhQHtSV/Wksv2da13UF1BgrtiHdP+CnB/ydF2Rv",
-	"XPY/TwIjUs2QN8hqkHL+VG6MdWqKUdReeFfAPckNtb4+TzKeRC0T7j0SuCdRNyN81sP/T/YanSPQ8JPY",
-	"HUsWbt+ueNBySvNw9Lzue3TeiT5jvYPAFJDF9qsyqjy2NnGVfmQbEDREYetXGZi2wDLWoOf7PBbF6EiP",
-	"T1gdr8ge8kjk0PgXKUUv5RRsdoCdFv+e16cA65eUWVZSb+GWlGATnBFUJgQoYIMc+2ZcXkwuJkkDBfQm",
-	"WNDwJZsKCEbWWVO5uSyHsdjBCvM0pbzyLN3VoOFHOu0npjh+2z5PJi+Nyt6vfD64XQFXb4k78XDm0KvX",
-	"Q//Z8a6Arw8Prweefu7y9LZNY3g7luN3KoeyURlV49K0TtQtimpQ1lSrNmKtTFTjBhYgZhVTi3OlP+Vo",
-	"WOR+RqxatrIFPd/BNRpG/tbKGvR80S26vwEAAP//6ifFF1sGAAA=",
+	"m02RP/35pR1U1ATy6CWC3gFjDOQj5p9rU0/xV4tRpoM5WSvygl7SpwnB2cqIJV8+RfLJhn9ME1z2rI2Y",
+	"bGImBp14insgdAXEtqowRtBL4yImQ7XGJkd8ZFyChg/lQV3Zn8bye6Z1XVdAjbFiG9L9A356wN95QfbG",
+	"Zf/zJDAi1Qx5g6wGKedP5cZYp6YYRe2FdwXck9xQ6+vzJONJ1DLh3iOBexJ1M8JnPfz/ZK/ROQINP4nd",
+	"sWTh9u2KBy2nNA9Hz+u+R+ed6DPWOwhMAVlsvyqjymMrjs6yDQgaorD1q4xMe2AZa9DzfSaLYnSkxyes",
+	"jpdkD3kkcmj8i5SiF3MKNjvATst/z+tTgPVLyiwrqbtwS0qwCc4IKhMCFLBBjn07Li8mF5OkgQJ6Eyxo",
+	"+JJNBQQj66yp3FyWw2DsYIV5nlJeeZruatDwI532M1Mcv26fJ5OXhmXvVz4f3a6Aq7fEnXg6c+jV66H/",
+	"bHlXwNeHh9cDTz94eX7bpjG8HcvxO5VD2aiMqnFpWifqFkU1KGuqVRuxViaqcQcLELOKqcW50p9yNCxy",
+	"PyNWLVvZgp7v4BoNI39rZQ16vugW3d8AAAD//2mUy0FdBgAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
