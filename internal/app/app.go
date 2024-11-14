@@ -93,7 +93,7 @@ func (app *App) Setup(configs config.AppConfig) error {
 	app.SetMysqlClient(mysql)
 
 	// //Redis
-	// redisConfig := &quetzal.RedisConfig{
+	// redisConfig := &database.RedisConfig{
 	// 	Host:     config.Redis.Host,
 	// 	Password: config.Redis.Password,
 	// 	Port:     config.Redis.Port,
