@@ -45,7 +45,9 @@ mockery:
 
 .PHONY: unit
 unit:
-	go mod tidy && go test $(shell go list ./internal/... | grep -v /mocks) -race -coverprofile .testCoverage.txt
+	go mod tidy
+	go install github.com/jstemmer/go-junit-report@latest
+	go test $(shell go list ./internal/... | grep -v /mocks) -race -coverprofile .testCoverage.txt -v 2>&1 | tee /dev/stderr | go-junit-report > rspec.xml
 
 .PHONY: unit-coverage
 unit-coverage: unit ## Runs unit tests and generates a html coverage report
