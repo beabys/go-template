@@ -21,7 +21,7 @@ type App struct {
 	Config      config.AppConfig
 	Logger      logger.Logger
 	MysqlClient database.Database
-	// RedisClient *database.Redis
-	HttpServer api.ApiServer
-	GrpcServer api.ApiServer
+	RedisClient database.Database
+	HttpServer  api.ApiServer
+	GrpcServer  api.ApiServer
 }

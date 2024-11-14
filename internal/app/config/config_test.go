@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"gitlab.com/beabys/quetzal"
+	"gitlab.com/beabys/go-template/internal/utils"
 
 	"gotest.tools/assert"
 )
@@ -72,7 +72,7 @@ func (m *MockConfigFail) LoadConfigs() error {
 }
 
 func createTestConfigFile(path string) (string, string, error) {
-	testpath := path + quetzal.RandomString(8)
+	testpath := path + utils.RandomString(8)
 	config := testpath + "/env.local.json"
 	err := os.MkdirAll(testpath, os.ModePerm)
 	if err != nil {

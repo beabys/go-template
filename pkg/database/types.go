@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/go-redis/redis"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -36,4 +37,17 @@ type MysqlConfig struct {
 	ConnectionRetries int
 	ConnMaxLifetime   time.Duration
 	HashKey           string
+}
+
+type Redis struct {
+	DB     *redis.Client
+	config *RedisConfig
+}
+
+// RedisConfig type to connect to Redis
+type RedisConfig struct {
+	Password string
+	Host     string
+	Port     int
+	DBNumber int
 }
