@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"gitlab.com/beabys/go-template/internal/app/config"
-	helloworld "gitlab.com/beabys/go-template/internal/hello_world"
-	"gitlab.com/beabys/go-template/pkg/logger"
+	"github.com/beabys/go-template/internal/app/config"
+	helloworld "github.com/beabys/go-template/internal/hello_world"
+	"github.com/beabys/go-template/pkg/logger"
 	"golang.org/x/sync/errgroup"
 )
 

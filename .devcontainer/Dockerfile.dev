@@ -22,7 +22,7 @@ RUN echo "parse_git_branch() {" >> /home/dev/.bashrc && \
     echo "export PATH=/usr/local/go/bin:$PATH" >>/home/dev/.bashrc && \
     # Persist bash history
     echo "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" >>/home/dev/.bashrc && \
-    echo "cd /go/src/gitlab.com/beabys/go-template" >>/home/dev/.bashrc
+    echo "cd /go/src/github.com/beabys/go-template" >>/home/dev/.bashrc
 
 
 

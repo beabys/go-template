@@ -22,7 +22,7 @@ class HelloWorld
 name (	Rname"*
 HelloWorldResponse
 hello (	RhelloBÃ
-com.hello_world.v1BHelloWorldProtoPZGgitlab.com/beabys/go-template/proto/gen/go/hello_world/v1;hello_worldv1¢HXXªHelloWorld.V1ÊHelloWorld\\V1âHelloWorld\\V1\\GPBMetadataêHelloWorld::V1bproto3'
+com.hello_world.v1BHelloWorldProtoPZGgithub.com/beabys/go-template/proto/gen/go/hello_world/v1;hello_worldv1¢HXXªHelloWorld.V1ÊHelloWorld\\V1âHelloWorld\\V1\\GPBMetadataêHelloWorld::V1bproto3'
         , true);
 
         static::$is_initialized = true;

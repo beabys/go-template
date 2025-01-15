@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/beabys/go-template/pkg/logger"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/prometheus/client_golang/prometheus"
-	"gitlab.com/beabys/go-template/pkg/logger"
 	"go.uber.org/zap"
 )
 

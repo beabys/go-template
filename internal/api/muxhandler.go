@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"net/http"
 
+	v1 "github.com/beabys/go-template/internal/api/v1"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	v1 "gitlab.com/beabys/go-template/internal/api/v1"
 )
 
 func NewMuxHandler(server *HttpServer) (http.Handler, error) {

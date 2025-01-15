@@ -52,7 +52,7 @@ func (_c *ApiServer_Run_Call) Return() *ApiServer_Run_Call {
 }
 
 func (_c *ApiServer_Run_Call) RunAndReturn(run func(context.Context, *errgroup.Group)) *ApiServer_Run_Call {
-	_c.Call.Return(run)
+	_c.Run(run)
 	return _c
 }
 

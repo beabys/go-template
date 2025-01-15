@@ -5,14 +5,14 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/beabys/go-template/internal/app/config"
+	helloworld "github.com/beabys/go-template/internal/hello_world"
+	"github.com/beabys/go-template/pkg/logger"
 	"github.com/prometheus/client_golang/prometheus"
-	"gitlab.com/beabys/go-template/internal/app/config"
-	helloworld "gitlab.com/beabys/go-template/internal/hello_world"
-	"gitlab.com/beabys/go-template/pkg/logger"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 
-	hwproto "gitlab.com/beabys/go-template/proto/gen/go/hello_world/v1"
+	hwproto "github.com/beabys/go-template/proto/gen/go/hello_world/v1"
 )
 
 type PrometheusMetrics struct {

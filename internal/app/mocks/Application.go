@@ -5,9 +5,9 @@ package app
 import (
 	context "context"
 
-	config "gitlab.com/beabys/go-template/internal/app/config"
+	config "github.com/beabys/go-template/internal/app/config"
 
-	logger "gitlab.com/beabys/go-template/pkg/logger"
+	logger "github.com/beabys/go-template/pkg/logger"
 
 	mock "github.com/stretchr/testify/mock"
 )
@@ -54,7 +54,7 @@ func (_c *Application_Recoverer_Call) Return() *Application_Recoverer_Call {
 }
 
 func (_c *Application_Recoverer_Call) RunAndReturn(run func(func())) *Application_Recoverer_Call {
-	_c.Call.Return(run)
+	_c.Run(run)
 	return _c
 }
 
@@ -133,7 +133,7 @@ func (_c *Application_SetLogger_Call) Return() *Application_SetLogger_Call {
 }
 
 func (_c *Application_SetLogger_Call) RunAndReturn(run func(logger.Logger)) *Application_SetLogger_Call {
-	_c.Call.Return(run)
+	_c.Run(run)
 	return _c
 }
 

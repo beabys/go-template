@@ -3,10 +3,10 @@ package app
 import (
 	"context"
 
-	"gitlab.com/beabys/go-template/internal/api"
-	"gitlab.com/beabys/go-template/internal/app/config"
-	"gitlab.com/beabys/go-template/pkg/database"
-	"gitlab.com/beabys/go-template/pkg/logger"
+	"github.com/beabys/go-template/internal/api"
+	"github.com/beabys/go-template/internal/app/config"
+	"github.com/beabys/go-template/pkg/database"
+	"github.com/beabys/go-template/pkg/logger"
 )
 
 type Application interface {
