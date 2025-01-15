@@ -7,13 +7,13 @@ filename: "{{.MockName}}.go"
 dir: "./{{.InterfaceDirRelative}}/mocks"
 with-expecter: True
 packages: 
-  gitlab.com/beabys/go-template/internal/api:
+  github.com/beabys/go-template/internal/api:
     config:
       recursive: True
-  gitlab.com/beabys/go-template/internal/app:
+  github.com/beabys/go-template/internal/app:
     config:
       recursive: True
-  gitlab.com/beabys/go-template/internal/hello_world:
+  github.com/beabys/go-template/internal/hello_world:
     config:
       recursive: True
       

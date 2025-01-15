@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"gitlab.com/beabys/go-template/internal/utils"
+	"github.com/beabys/go-template/internal/utils"
 
 	"gotest.tools/assert"
 )

@@ -1,7 +1,7 @@
 package config
 
 import (
-	config "gitlab.com/beabys/ayotl"
+	config "github.com/beabys/ayotl"
 )
 
 var CONFIG_FILE = "CONFIG_FILE"

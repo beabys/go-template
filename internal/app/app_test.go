@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"gitlab.com/beabys/go-template/internal/app/config"
-	mocks "gitlab.com/beabys/go-template/internal/app/config/mocks"
-	"gitlab.com/beabys/go-template/pkg/logger"
+	"github.com/beabys/go-template/internal/app/config"
+	mocks "github.com/beabys/go-template/internal/app/config/mocks"
+	"github.com/beabys/go-template/pkg/logger"
 	"go.uber.org/zap"
 
 	"github.com/stretchr/testify/assert"

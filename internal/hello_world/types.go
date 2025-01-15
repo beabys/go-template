@@ -3,9 +3,9 @@ package helloworld
 import (
 	"context"
 
-	"gitlab.com/beabys/go-template/internal/domain/model"
-	"gitlab.com/beabys/go-template/internal/hello_world/repository"
-	"gitlab.com/beabys/go-template/pkg/logger"
+	"github.com/beabys/go-template/internal/domain/model"
+	"github.com/beabys/go-template/internal/hello_world/repository"
+	"github.com/beabys/go-template/pkg/logger"
 )
 
 type HelloWorldIntereface interface {

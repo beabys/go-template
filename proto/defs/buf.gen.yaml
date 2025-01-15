@@ -2,7 +2,7 @@ version: v1
 managed:
   enabled: true
   go_package_prefix:
-    default: gitlab.com/beabys/go-template/proto/gen/go
+    default: github.com/beabys/go-template/proto/gen/go
 plugins:
   - name: go
     out: ../gen/go

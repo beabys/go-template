@@ -9,24 +9,24 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/beabys/go-template/internal/api"
+	"github.com/beabys/go-template/internal/app/config"
+	helloworld "github.com/beabys/go-template/internal/hello_world"
+	"github.com/beabys/go-template/internal/hello_world/repository"
+	"github.com/beabys/go-template/internal/utils"
+	"github.com/beabys/go-template/pkg/database"
+	"github.com/beabys/go-template/pkg/logger"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	"gitlab.com/beabys/go-template/internal/api"
-	"gitlab.com/beabys/go-template/internal/app/config"
-	helloworld "gitlab.com/beabys/go-template/internal/hello_world"
-	"gitlab.com/beabys/go-template/internal/hello_world/repository"
-	"gitlab.com/beabys/go-template/internal/utils"
-	"gitlab.com/beabys/go-template/pkg/database"
-	"gitlab.com/beabys/go-template/pkg/logger"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 
-	hwproto "gitlab.com/beabys/go-template/proto/gen/go/hello_world/v1"
+	hwproto "github.com/beabys/go-template/proto/gen/go/hello_world/v1"
 )
 
 // New returns a new App struct

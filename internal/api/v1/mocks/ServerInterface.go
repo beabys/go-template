@@ -51,7 +51,7 @@ func (_c *ServerInterface_HelloWorld_Call) Return() *ServerInterface_HelloWorld_
 }
 
 func (_c *ServerInterface_HelloWorld_Call) RunAndReturn(run func(http.ResponseWriter, *http.Request)) *ServerInterface_HelloWorld_Call {
-	_c.Call.Return(run)
+	_c.Run(run)
 	return _c
 }
 

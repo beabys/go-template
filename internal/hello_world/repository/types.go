@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 
-	"gitlab.com/beabys/go-template/internal/domain/model"
-	"gitlab.com/beabys/go-template/pkg/database"
-	"gitlab.com/beabys/go-template/pkg/logger"
+	"github.com/beabys/go-template/internal/domain/model"
+	"github.com/beabys/go-template/pkg/database"
+	"github.com/beabys/go-template/pkg/logger"
 )
 
 type RepositoryHelloWorld struct {

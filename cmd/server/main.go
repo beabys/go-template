@@ -6,8 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"gitlab.com/beabys/go-template/internal/app"
-	"gitlab.com/beabys/go-template/internal/app/config"
+	"github.com/beabys/go-template/internal/app"
+	"github.com/beabys/go-template/internal/app/config"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 )
