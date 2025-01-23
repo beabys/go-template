@@ -32,7 +32,15 @@ func (m *Mysql) Connect() error {
 		multistatements = "&multiStatements=true"
 	}
 
-	var stringConnection = fmt.Sprintf("%s:%s@tcp(%s:%v)/%s?parseTime=True%s", m.config.Username, m.config.Password, m.config.Host, m.config.Port, m.config.DBName, multistatements)
+	var stringConnection = fmt.Sprintf(
+		"%s:%s@tcp(%s:%v)/%s?parseTime=True%s",
+		m.config.Username,
+		m.config.Password,
+		m.config.Host,
+		m.config.Port,
+		m.config.DBName,
+		multistatements,
+	)
 
 	db, err := sqlx.Connect("mysql", stringConnection)
 	if err != nil {
