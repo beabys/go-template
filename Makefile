@@ -66,4 +66,4 @@ gen-api-doc: ## generates public api document
 
 .PHONY: proto-gen
 proto-gen:
-	docker run -w /proto/defs --rm  -v ${CURDIR}/proto:/proto ealves/buf:0.1.0-rc4 generate
+	docker run -w /proto/defs --rm  -v ${CURDIR}/proto:/proto --platform linux/amd64 ealves/buf:0.1.0-rc4 generate
