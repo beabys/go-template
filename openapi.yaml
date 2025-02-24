@@ -6,7 +6,7 @@ info:
 security:
   - BearerAuth: []
 paths:
-  /v1/hello:
+  /hello:
     get:
       tags:
         - hello-world

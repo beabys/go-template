@@ -148,7 +148,7 @@ func NewHelloWorldRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/hello")
+	operationPath := fmt.Sprintf("/hello")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -297,7 +297,7 @@ func ParseHelloWorldResponse(rsp *http.Response) (*HelloWorldResponse, error) {
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Helloworld is a default Get method used as example
-	// (GET /v1/hello)
+	// (GET /hello)
 	HelloWorld(w http.ResponseWriter, r *http.Request)
 }
 
@@ -306,7 +306,7 @@ type ServerInterface interface {
 type Unimplemented struct{}
 
 // Helloworld is a default Get method used as example
-// (GET /v1/hello)
+// (GET /hello)
 func (_ Unimplemented) HelloWorld(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
@@ -454,7 +454,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/v1/hello", wrapper.HelloWorld)
+		r.Get(options.BaseURL+"/hello", wrapper.HelloWorld)
 	})
 
 	return r
@@ -463,15 +463,15 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/7SUzW7bMAzHX0XgdvTqdOsuuq3A2vXSQ3JYgSAH1WYSFbKoUXS2IPC7D5LtBOlStMDS",
-	"m02RP/35pR1U1ATy6CWC3gFjDOQj5p9rU0/xV4tRpoM5WSvygl7SpwnB2cqIJV8+RfLJhn9ME1z2rI2Y",
-	"bGImBp14insgdAXEtqowRtBL4yImQ7XGJkd8ZFyChg/lQV3Zn8bye6Z1XVdAjbFiG9L9A356wN95QfbG",
-	"Zf/zJDAi1Qx5g6wGKedP5cZYp6YYRe2FdwXck9xQ6+vzJONJ1DLh3iOBexJ1M8JnPfz/ZK/ROQINP4nd",
-	"sWTh9u2KBy2nNA9Hz+u+R+ed6DPWOwhMAVlsvyqjymMrjs6yDQgaorD1q4xMe2AZa9DzfSaLYnSkxyes",
-	"jpdkD3kkcmj8i5SiF3MKNjvATst/z+tTgPVLyiwrqbtwS0qwCc4IKhMCFLBBjn07Li8mF5OkgQJ6Eyxo",
-	"+JJNBQQj66yp3FyWw2DsYIV5nlJeeZruatDwI532M1Mcv26fJ5OXhmXvVz4f3a6Aq7fEnXg6c+jV66H/",
-	"bHlXwNeHh9cDTz94eX7bpjG8HcvxO5VD2aiMqnFpWifqFkU1KGuqVRuxViaqcQcLELOKqcW50p9yNCxy",
-	"PyNWLVvZgp7v4BoNI39rZQ16vugW3d8AAAD//2mUy0FdBgAA",
+	"H4sIAAAAAAAC/7SUzW7bMAzHX0XgdvTqbOsuuq3A0vXSQ3JYgSAH1WYSFbKoUXS3IPC7D5LtBOlStEDT",
+	"m02RP/35pR1U1ATy6CWC3gFjDOQj5p8rU8/wd4tRZoM5WSvygl7SpwnB2cqIJV8+RPLJhn9NE1z2rI2Y",
+	"bGImBp14insgdAXEtqowRtAr4yImQ7XBJkd8ZFyBhg/lQV3Zn8byR6Z1XVdAjbFiG9L9A352wN94QfbG",
+	"Zf/zJDAi1Rz5EVkNUs6fytRYp2YYRe2FdwXckkyp9fV5kvEkapVw75HALYmajvB5D3+b7A06R6DhF7E7",
+	"lizcvl7xoOWU5uHoad336LwTfcZ6B4EpIIvtV2VUeWzF0Vm2AUFDFLZ+nZFpDyxjDXqxz2RZjI50/4DV",
+	"8ZLsIfdEDo1/llL0Yk7B5gfYafnveX0KsH5FmWUldReuSQk2wRlBZUKAAh6RY9+OzxeTi0nSQAG9CRY0",
+	"fM2mAoKRTdZUDlOxgzXmYUpJ5VG6qUHDz3TaD0xx/LR9mUyem5S9X/l0brsCLl8Td+LdzKGXL4f+t+Jd",
+	"Ad/u7l4OPP3a5eFtm8bwdizHn1QOZaMyqsaVaZ2oaxTVoGyoVm3EWpmoxgUsQMw6pv7mSn/K0bDMzYxY",
+	"tWxlC3qxgys0jPy9lQ3oxbJbdv8CAAD//ytIXy1aBgAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

@@ -105,19 +105,26 @@ func (app *App) Setup(configs config.AppConfig) error {
 	return nil
 }
 
-func (a *App) SetHTTPServer() error {
-
+func (a *App) setMuxServer() *api.HttpServer {
 	// init service dependencies here
 	helloWorldRepository := repository.NewHelloRepository(a.Logger, a.MysqlClient)
 	helloWorldService := helloworld.NewHelloWorld(a.Logger, helloWorldRepository)
 
 	configs := a.Config.GetConfigs()
-	server := api.NewHttpServer().
+	return api.NewHttpServer().
 		SetConfig(configs).
 		SetLogger(a.Logger).
 		// TODO this should be changes according new implementations
 		SetHelloWorldService(helloWorldService)
+}
 
+func (a *App) SetLambdaMuxHandler() (http.Handler, error) {
+	return api.NewMuxHandler(a.setMuxServer())
+}
+
+func (a *App) SetHTTPServer() error {
+	server := a.setMuxServer()
+	configs := a.Config.GetConfigs()
 	h, err := api.NewMuxHandler(server)
 	if err != nil {
 		return err

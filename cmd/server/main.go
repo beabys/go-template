@@ -31,10 +31,10 @@ func main() {
 	}
 
 	// Connect to Mysql
-	err = app.MysqlClient.Connect()
-	if err != nil {
-		app.Logger.Fatal("error setting Mysql client", zap.Error(err))
-	}
+	// err = app.MysqlClient.Connect()
+	// if err != nil {
+	// 	app.Logger.Fatal("error setting Mysql client", zap.Error(err))
+	// }
 
 	// // Connect to Redis
 	// err = app.RedisClient.Connect()
