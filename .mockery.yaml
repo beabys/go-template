@@ -4,16 +4,28 @@ disable-version-string: True
 # recursive: True
 mockname: "{{.InterfaceName}}"
 filename: "{{.MockName}}.go"
-dir: "./{{.InterfaceDirRelative}}/mocks"
+# dir: "./{{.InterfaceDirRelative}}/mocks"
 with-expecter: True
 packages: 
-  github.com/beabys/go-template/internal/api:
-    config:
-      recursive: True
+#### app
   github.com/beabys/go-template/internal/app:
     config:
-      recursive: True
+      dir: "mocks/app"
+  github.com/beabys/go-template/internal/app/config:
+    config:
+      dir: "mocks/app/config"
+#### api
+  github.com/beabys/go-template/internal/api:
+    config:
+      dir: "mocks/api"
+  github.com/beabys/go-template/internal/api/v1:
+    config:
+      dir: "mocks/api/v1"
+#### hello_world
   github.com/beabys/go-template/internal/hello_world:
     config:
-      recursive: True
+      dir: "mocks/hello_world"
+  github.com/beabys/go-template/internal/hello_world/repository:
+    config:
+      dir: "mocks/hello_world/repository"
       
