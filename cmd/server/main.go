@@ -8,7 +8,7 @@ import (
 
 	"github.com/beabys/go-template/internal/app"
 	"github.com/beabys/go-template/internal/app/config"
-	"go.uber.org/zap"
+	"github.com/beabys/go-template/pkg/logger"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -33,7 +33,7 @@ func main() {
 	// Connect to Mysql
 	err = app.MysqlClient.Connect()
 	if err != nil {
-		app.Logger.Fatal("error setting Mysql client", zap.Error(err))
+		app.Logger.Fatal("error setting Mysql client", logger.LogField{Key: "error", Value: err})
 	}
 
 	// // Connect to Redis
@@ -45,13 +45,13 @@ func main() {
 	// Setup the http Server
 	err = app.SetHTTPServer()
 	if err != nil {
-		app.Logger.Fatal("error setting http server", zap.Error(err))
+		app.Logger.Fatal("error setting http server", logger.LogField{Key: "error", Value: err})
 	}
 
 	// Setup the GRPC Server
 	err = app.SetGRPCServer()
 	if err != nil {
-		app.Logger.Fatal("error setting grpc server", zap.Error(err))
+		app.Logger.Fatal("error setting grpc server", logger.LogField{Key: "error", Value: err})
 	}
 
 	wg, ctx := errgroup.WithContext(ctx)

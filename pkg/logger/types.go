@@ -1,25 +1,29 @@
 package logger
 
 import (
+	"log/slog"
+
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 type Logger interface {
 	GetLogger() any
-	Debug(string, ...zap.Field)
-	Info(string, ...zap.Field)
-	Warn(string, ...zap.Field)
-	Error(string, error, ...zap.Field)
-	Fatal(string, ...zap.Field)
+	Debug(string, ...LogField)
+	Info(string, ...LogField)
+	Warn(string, ...LogField)
+	Error(string, error, ...LogField)
+	Fatal(string, ...LogField)
 }
 
-type DefaultLogger struct {
+type ZapLogger struct {
 	log *zap.Logger
 }
 
-type DefaultLoggerConfig struct {
-	Out   []string
-	Error []string
-	Level zapcore.Level
+type SlogLogger struct {
+	log *slog.Logger
+}
+
+type LogField struct {
+	Key   string
+	Value any
 }

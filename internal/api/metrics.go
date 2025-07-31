@@ -7,7 +7,6 @@ import (
 	"github.com/beabys/go-template/pkg/logger"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/prometheus/client_golang/prometheus"
-	"go.uber.org/zap"
 )
 
 func NewPrometheusMetrics() *PrometheusMetrics {
@@ -22,7 +21,7 @@ func NewPrometheusMetrics() *PrometheusMetrics {
 	return &PrometheusMetrics{latency}
 }
 
-func middlewareMetrics(logger logger.Logger, p *PrometheusMetrics) func(http.Handler) http.Handler {
+func middlewareMetrics(log logger.Logger, p *PrometheusMetrics) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
@@ -33,17 +32,18 @@ func middlewareMetrics(logger logger.Logger, p *PrometheusMetrics) func(http.Han
 					r.Method,
 					r.URL.Path,
 				).Observe(elapsed.Seconds())
-				logger.Info(
+				log.Info(
 					"request",
-					zap.String("request-id", r.Header.Get(middleware.RequestIDHeader)),
-					zap.String("method", r.Method),
-					zap.String("path", r.URL.Path),
-					zap.String("query", r.URL.RawQuery),
-					zap.String("ip", r.RemoteAddr),
-					zap.String("user-agent", r.UserAgent()),
-					zap.Int("status", ww.Status()),
-					zap.Int("bytes", ww.BytesWritten()),
-					zap.Duration("latency", elapsed),
+					logger.LogField{Key: "request-id", Value: r.Header.Get(middleware.RequestIDHeader)},
+					logger.LogField{Key: "method", Value: r.Method},
+					logger.LogField{Key: "path", Value: r.URL.Path},
+					logger.LogField{Key: "query", Value: r.URL.RawQuery},
+					logger.LogField{Key: "ip", Value: r.RemoteAddr},
+					logger.LogField{Key: "user-agent", Value: r.UserAgent()},
+					logger.LogField{Key: "status", Value: ww.Status()},
+					logger.LogField{Key: "latency", Value: elapsed},
+					logger.LogField{Key: "bytes", Value: ww.BytesWritten()},
+					logger.LogField{Key: "latency", Value: elapsed},
 				)
 			}()
 
