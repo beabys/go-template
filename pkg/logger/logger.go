@@ -1,67 +1,64 @@
 package logger
 
 import (
+	"context"
 	"fmt"
+	"log/slog"
 
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
-func NewDefaultLogger(config *DefaultLoggerConfig) (*DefaultLogger, error) {
-	if config.Out == nil {
-		config.Out = []string{"stdout"}
+func InterceptorLogger(l any) logging.Logger {
+	switch l := l.(type) {
+	case *zap.Logger:
+		return interceptorZapLogger(l)
+	case *slog.Logger:
+		return interceptorSlogLogger(l)
+	default:
+		panic(fmt.Sprintf("unsupported logger type %T", l))
 	}
-	if config.Error == nil {
-		config.Error = []string{"stderr"}
-	}
-
-	logConfig := zap.Config{
-		OutputPaths:      config.Out,
-		ErrorOutputPaths: config.Error,
-		Level:            zap.NewAtomicLevelAt(config.Level),
-		Encoding:         "json",
-		EncoderConfig: zapcore.EncoderConfig{
-			LevelKey:     "level",
-			TimeKey:      "time",
-			MessageKey:   "msg",
-			EncodeTime:   zapcore.ISO8601TimeEncoder,
-			EncodeLevel:  zapcore.LowercaseLevelEncoder,
-			EncodeCaller: zapcore.ShortCallerEncoder,
-		},
-	}
-	l, err := logConfig.Build()
-	if err != nil {
-		return nil, fmt.Errorf("error setting up default logger - %w", err)
-	}
-
-	return &DefaultLogger{l}, nil
 }
 
-func (l *DefaultLogger) GetLogger() any {
-	return l.log
+func interceptorZapLogger(l *zap.Logger) logging.Logger {
+	return logging.LoggerFunc(func(ctx context.Context, lvl logging.Level, msg string, fields ...any) {
+		f := make([]zap.Field, 0, len(fields)/2)
+
+		for i := 0; i < len(fields); i += 2 {
+			key := fields[i]
+			value := fields[i+1]
+
+			switch v := value.(type) {
+			case string:
+				f = append(f, zap.String(key.(string), v))
+			case int:
+				f = append(f, zap.Int(key.(string), v))
+			case bool:
+				f = append(f, zap.Bool(key.(string), v))
+			default:
+				f = append(f, zap.Any(key.(string), v))
+			}
+		}
+
+		logger := l.WithOptions(zap.AddCallerSkip(1)).With(f...)
+
+		switch lvl {
+		case logging.LevelDebug:
+			logger.Debug(msg)
+		case logging.LevelInfo:
+			logger.Info(msg)
+		case logging.LevelWarn:
+			logger.Warn(msg)
+		case logging.LevelError:
+			logger.Error(msg)
+		default:
+			panic(fmt.Sprintf("unknown level %v", lvl))
+		}
+	})
 }
 
-func (l *DefaultLogger) Debug(s string, f ...zap.Field) {
-	l.log.Debug(s, f...)
-}
-
-func (l *DefaultLogger) Info(s string, f ...zap.Field) {
-	l.log.Info(s, f...)
-}
-
-func (l *DefaultLogger) Warn(s string, f ...zap.Field) {
-	l.log.Warn(s, f...)
-}
-
-func (l *DefaultLogger) Error(s string, err error, t ...zap.Field) {
-	t = append(t, zap.Error(err))
-	l.log.Error(s, t...)
-}
-
-func (l *DefaultLogger) Fatal(s string, f ...zap.Field) {
-	l.log.Fatal(s, f...)
-}
-
-func (l *DefaultLogger) With(f ...zap.Field) *zap.Logger {
-	return l.log.With(f...)
+func interceptorSlogLogger(l *slog.Logger) logging.Logger {
+	return logging.LoggerFunc(func(ctx context.Context, lvl logging.Level, msg string, fields ...any) {
+		l.Log(ctx, slog.Level(lvl), msg, fields...)
+	})
 }

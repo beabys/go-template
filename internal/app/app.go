@@ -17,11 +17,11 @@ import (
 	"github.com/beabys/go-template/pkg/database"
 	"github.com/beabys/go-template/pkg/logger"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	"go.uber.org/zap"
+
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
-	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	"go.uber.org/zap"
+	grpc_logging "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
@@ -67,9 +67,9 @@ func (app *App) Setup(configs config.AppConfig) error {
 
 	config := app.Config.GetConfigs()
 
-	// SetLogger
-	loggerConfigs := &logger.DefaultLoggerConfig{}
-	logger, err := logger.NewDefaultLogger(loggerConfigs)
+	// Logger
+	logger, err := logger.NewZapLogger([]string{}, []string{}, zap.DebugLevel)
+	// logger, err := logger.NewSlogLogger("debug")
 	if err != nil {
 		return err
 	}
@@ -125,7 +125,7 @@ func (a *App) SetHTTPServer() error {
 
 	address := fmt.Sprintf("%s:%v", configs.Http.Host, configs.Http.Port)
 
-	a.Logger.Info("setup http server ", zap.String("address", address))
+	a.Logger.Info("setup http server ", logger.LogField{Key: "address", Value: address})
 
 	server.Server = &http.Server{
 		Addr:    address,
@@ -157,24 +157,29 @@ func (a *App) SetGRPCServer() error {
 		// TODO this should be changes according new implementations
 		SetHelloWorldService(helloWorldService)
 
+	// Set up the gRPC server with interceptors
+
+	// recoveryOpt is used to recover from panics in gRPC handlers
 	recoveryOpt := grpc_recovery.WithRecoveryHandler(func(p interface{}) (err error) {
 		a.Logger.Error("panic recovered", err)
 		return err
 	})
 	// get logger and create new entry for grpcLogger
-	logger := a.Logger.GetLogger().(*zap.Logger)
+	logs := a.Logger.GetLogger()
+	opts := []grpc_logging.Option{
+		grpc_logging.WithLogOnEvents(grpc_logging.StartCall, grpc_logging.FinishCall),
+		// Add any other option (check functions starting with logging.With).
+	}
 
 	rpcServer := grpc.NewServer(
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
 			grpc_ctxtags.StreamServerInterceptor(),
-			grpc_prometheus.StreamServerInterceptor,
-			grpc_zap.StreamServerInterceptor(logger),
+			grpc_logging.StreamServerInterceptor(logger.InterceptorLogger(logs), opts...),
 			grpc_recovery.StreamServerInterceptor(recoveryOpt),
 		)),
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 			grpc_ctxtags.UnaryServerInterceptor(),
-			grpc_prometheus.UnaryServerInterceptor,
-			grpc_zap.UnaryServerInterceptor(logger),
+			grpc_logging.UnaryServerInterceptor(logger.InterceptorLogger(logs), opts...),
 			grpc_recovery.UnaryServerInterceptor(recoveryOpt),
 		)),
 		grpc.KeepaliveEnforcementPolicy(keepalive.EnforcementPolicy{
@@ -186,7 +191,7 @@ func (a *App) SetGRPCServer() error {
 	hwproto.RegisterHelloWorldServiceServer(rpcServer, server)
 	reflection.Register(rpcServer)
 
-	a.Logger.Info("setup gRPC server ", zap.String("address", address))
+	a.Logger.Info("setup gRPC server ", logger.LogField{Key: "address", Value: address})
 	server.Listener = listener
 	server.Server = rpcServer
 
@@ -199,9 +204,9 @@ func (a *App) SetGRPCServer() error {
 func (app *App) Recoverer(fn func()) {
 	defer func() {
 		if r := recover(); r != nil {
-			logger := app.GetLogger()
+			log := app.GetLogger()
 			stackTrace := fmt.Sprintf("%v\n%v", r, string(debug.Stack()))
-			logger.Warn("Recovering from panic", zap.String("stackTrace", stackTrace))
+			log.Warn("Recovering from panic", logger.LogField{Key: "stackTrace", Value: stackTrace})
 			go app.Recoverer(fn)
 		}
 	}()

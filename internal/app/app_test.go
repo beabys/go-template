@@ -38,7 +38,7 @@ func TestApp(t *testing.T) {
 
 	t.Run("test Set Logger", func(t *testing.T) {
 		app := New()
-		logger, _ := logger.NewDefaultLogger(&logger.DefaultLoggerConfig{})
+		logger, _ := logger.NewZapLogger([]string{}, []string{}, zap.DebugLevel)
 		app.SetLogger(logger)
 		assert.Equal(t, app.GetLogger(), logger)
 
@@ -69,7 +69,7 @@ func TestRecover(t *testing.T) {
 			t.Errorf("The code did not panic")
 		}()
 		app := New()
-		mockLogger, _ := logger.NewDefaultLogger(&logger.DefaultLoggerConfig{})
+		mockLogger, _ := logger.NewZapLogger([]string{}, []string{}, zap.DebugLevel)
 		logger := &MockLogger{mockLogger}
 		app.Logger = logger
 		app.Recoverer(WithPanic)
@@ -81,10 +81,10 @@ func WithPanic() {
 }
 
 type MockLogger struct {
-	*logger.DefaultLogger
+	*logger.ZapLogger
 }
 
-func (m *MockLogger) Warn(string, ...zap.Field) {
+func (m *MockLogger) Warn(string, ...logger.LogField) {
 	// using the error function to panic during the recovery
 	// in that case means recovery is going inside properly
 	panic("this message means function panic and go into the recoverer")
