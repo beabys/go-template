@@ -1,4 +1,4 @@
-package api
+package http
 
 import (
 	"errors"
@@ -16,35 +16,27 @@ import (
 func NewMuxHandler(server *HttpServer) (http.Handler, error) {
 	swagger, err := v1.GetSwagger()
 	if err != nil {
-		return nil, fmt.Errorf("error loading swagger spec\n: %w", err)
+		return nil, fmt.Errorf("error loading swagger spec: %w", err)
 	}
 
-	// Clear out the servers array in the swagger spec, that skips validating
-	// that server names match. We don't know how this thing will be run.
 	swagger.Servers = nil
 
-	r := chi.NewRouter() // http.Handler
+	r := chi.NewRouter()
 
-	// metrics latency
 	prometheusMetrics := NewPrometheusMetrics()
 	prometheus.MustRegister(prometheusMetrics.latency)
 
-	// default middlewars
 	r.NotFound(notFound)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RealIP)
 	r.Use(middlewareMetrics(server.Logger, prometheusMetrics))
 
-	// public auth router group
 	r.Group(func(r chi.Router) {
 		r.Mount("/metrics", promhttp.Handler())
 	})
 
 	r.Group(func(r chi.Router) {
-		// cors
 		r.Use(cors.Handler(cors.Options{
-			// AllowedOrigins: []string{"https://foo.com"}, // Use this to allow specific origin hosts
-			// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
 			AllowCredentials: true,
 			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
 			AllowedHeaders: []string{
@@ -52,10 +44,9 @@ func NewMuxHandler(server *HttpServer) (http.Handler, error) {
 				"Access-Control-Allow-Headers", "X-Requested-With",
 				"Access-Control-Request-Method", "Access-Control-Request-Headers",
 			},
-			MaxAge: 300, // Maximum value not ignored by any of major browsers
+			MaxAge: 300,
 		}))
 
-		// Mount oapi routes
 		v1.HandlerWithOptions(server, v1.ChiServerOptions{
 			BaseRouter: r,
 			ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
@@ -68,7 +59,6 @@ func NewMuxHandler(server *HttpServer) (http.Handler, error) {
 	return r, nil
 }
 
-// Not found Middleware
 func notFound(w http.ResponseWriter, r *http.Request) {
 	errorResponseJSON(w, http.StatusNotFound, errors.New("not found"))
 }

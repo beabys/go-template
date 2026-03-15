@@ -6,81 +6,130 @@
 * [MariaDB](https://mariadb.org/) or [MySQL](https://www.mysql.com/) (optional only for run on host machine) 
 * [Redis](https://redis.io/download//) (optional only for run on host machine) 
 
-## Project structure
+## Architecture
+
+This project uses **Domain-Driven Design (DDD)** with **Hexagonal Architecture** principles, following Go best practices.
+
+### Structure
 
 ```
 go-template
-├── builds
 ├── cmd
-│   └── server              # Main File(s)
-├── config.yaml             # configuration file used in development
-├── deployment              # k8s deployment files
+│   └── server              # Entry point
 ├── internal
-│   ├── api                 # api handler implementation
-│   │   └── v1              # openapi generated files
-│   ├── app                 # internal application 
-│   │   ├── config          # structs and configuration implementation
-│   │   └── database        # database clients
-│   ├── domain              # domain folder for entities
-│   ├── hello_world         # hello_world domain service implementation
-│   ├── utils               # helper functions
-│   └── mocks               # mockery generated files
-├── migrations              # sql migration files
-├── openapi.yaml            # openapi
-├── pkg                     # packages expeted to be separated in the future
-└── proto                   # Proto contracts and definitions
+│   ├── domain/             # Core business logic (no external dependencies)
+│   │   └── example/        # Example domain (rename for your needs)
+│   │       └── model/     # Entities & value objects
+│   │
+│   ├── application/        # Use cases & orchestration
+│   │   └── example/
+│   │       ├── command/   # Request/Response DTOs
+│   │       ├── handler/   # Use case implementation
+│   │       └── repository/ # Repository interface (CONSUMER-DEFINED)
+│   │
+│   ├── infrastructure/   # External adapters
+│   │   ├── persistence/   # Database implementations
+│   │   │   └── repository/
+│   │   └── adapters/      # HTTP/gRPC handlers
+│   │       ├── http/
+│   │       └── grpc/
+│   │
+│   ├── app/              # Composition root (DI wiring)
+│   │   └── config/
+│   │
+│   └── api/v1/          # OpenAPI generated files
+│
+├── pkg                   # Shared utilities (logger, database)
+├── proto                 # gRPC definitions
+├── deployment            # Kubernetes deployment files
+├── builds               # Docker-compose files
+├── config.yaml          # Configuration file
+└── openapi.yaml        # OpenAPI specification
 ```
 
-## Configurations
+### Layer Responsibilities
 
-First copy the template file `./config/config.yaml.sample` to `./config/config.yaml`
+| Layer | Responsibility |
+|-------|---------------|
+| `domain` | Pure business logic, entities, value objects (NO external deps) |
+| `application` | Use cases, orchestrates domain, defines repository ports |
+| `infrastructure` | Implementations (database, HTTP, gRPC adapters) |
+| `app` | Dependency injection, wiring, server startup |
+| `api` | OpenAPI generated code |
+
+### Dependency Rule
+
+Following Go best practices: **"Accept Interfaces, Return Structs"**
+
+- **Consumer defines interfaces** (application layer)
+- **Implementer provides concrete** (infrastructure layer)
+- Dependencies point inward only: infrastructure → application → domain
+
+### Adding a New Domain
+
+To add a new domain (e.g., "users"):
+
+1. Create domain model: `internal/domain/users/model/`
+2. Create command DTOs: `internal/application/users/command/`
+3. Create repository interface: `internal/application/users/repository/` (consumer-defined)
+4. Create use case handler: `internal/application/users/handler/`
+5. Create repository adapter: `internal/infrastructure/persistence/repository/`
+6. Create HTTP handler: `internal/infrastructure/adapters/http/`
+
+## Configuration
+
+Copy the template file:
 
 ```
-cp ./config.yaml.sample ./config.yaml
-
+cp config.yaml_sample config.yaml
 ```
 
-Copy the env template file `.env.local` to `.env`
+Copy the env template file:
 
 ```
 cp .env.local .env
-
 ```
 
-Edit the corresponding fields on each file if required
+Edit the corresponding fields as needed.
 
-
-*Note: The make script will bind .env variables on each run as a ENVIRONMENT variables, for production is required to inject those env variables into the host
+*Note: The make script will bind .env variables on each run as ENVIRONMENT variables. For production, inject these env variables into the host.*
 
 ## Commands
 
-        make up            - run build and docker-compose up
-        make down          - run docker-compose down
-        make run           - run the app locally
-        make mysql-up      - run docker-compose up of the mysql showing the logs
-        make mysql-down    - run docker-compose down for mysql
-        make redis-up      - run docker-compose up of the redis showing the logs
-        make redis-down    - run docker-compose down for redis
-        make mockery       - run the mockery command to create mock interfaces(requires mockery installed)
-        make unit          - run Unit test of the app
-        make unit-coverage - run Unit test and generating html report
-        gen-api            - generate v1 code from apenapi.yaml file
-        gen-api-doc        - generate api html documentation from apenapi.yaml file
-        proto-gen          - genetate proto contracts in php and go
+| Command | Description |
+|---------|-------------|
+| `make up` | Build and start services with docker-compose |
+| `make down` | Stop docker-compose services |
+| `make run` | Run the app locally |
+| `make mysql-up` | Start MySQL with docker-compose |
+| `make mysql-down` | Stop MySQL |
+| `make redis-up` | Start Redis with docker-compose |
+| `make redis-down` | Stop Redis |
+| `make mockery` | Generate mock interfaces |
+| `make unit` | Run unit tests |
+| `make unit-coverage` | Run tests with coverage report |
+| `make gen-api` | Generate code from OpenAPI spec |
+| `make gen-api-doc` | Generate HTML API documentation |
+| `make proto-gen` | Generate gRPC code |
 
-## Quick start running Local with Docker
+## Quick Start
 
-Assume you already installed docker.
+### Running with Docker
 
-For the first time to start the service, just run `make up` this command will start the service at port `80` by default, if need to change the port of the application change it on the `./config.yaml` file.
+```
+make up
+```
 
+The service starts at port `80` by default. Change the port in `config.yaml` if needed.
 
-## Run by local golang
+### Running Locally
 
-If you do not install docker but you have installed golang and `GO111MODULE` enabled, Mysql and Redis
+Requires Go, MySQL, and Redis installed:
 
-You can run `make run` to run by local golang.
+```
+make run
+```
 
-*Note: this requires a local instance of mysql and redis
+---
 
-Created By Alfonso Rodriguez(beabys@gmail.com)
+Created by Alfonso Rodriguez (beabys@gmail.com)

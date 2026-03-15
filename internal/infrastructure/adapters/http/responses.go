@@ -1,4 +1,4 @@
-package api
+package http
 
 import (
 	"encoding/json"
@@ -16,18 +16,15 @@ func errorResponse(err error) v1.Error {
 	return errResponse
 }
 
-// errorResponseJSON return an error response with status code
 func errorResponseJSON(w http.ResponseWriter, statusCode int, err error) {
 	responseWriter(w, statusCode, errorResponse(err))
 }
 
-// middlewareRespHandler return an error response with status code for middlewares
 func middlewareRespHandler(w http.ResponseWriter, msg string, statusCode int) {
 	errFormatted := errorResponse(errors.New(msg))
 	responseWriter(w, statusCode, errFormatted)
 }
 
-// successResponseJSON return an error response with status code
 func successResponseJSON(w http.ResponseWriter, data map[string]interface{}) {
 	successResponse := v1.Success{}
 	successResponse.Success = true
@@ -35,7 +32,6 @@ func successResponseJSON(w http.ResponseWriter, data map[string]interface{}) {
 	responseWriter(w, http.StatusOK, successResponse)
 }
 
-// responseWriter print responseWritter
 func responseWriter(w http.ResponseWriter, statusCode int, response any) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
