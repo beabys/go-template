@@ -1,31 +1,20 @@
-all: True
-quiet: False
-disable-version-string: True
-# recursive: True
-mockname: "{{.InterfaceName}}"
-filename: "{{.MockName}}.go"
-# dir: "./{{.InterfaceDirRelative}}/mocks"
-with-expecter: True
-packages: 
-#### app
+all: true
+structname: '{{.InterfaceName}}'
+template: testify
+packages:
   github.com/beabys/go-template/internal/app:
     config:
-      dir: "mocks/app"
+      dir: mocks/app
+      filename: "{{.InterfaceName}}.go"
   github.com/beabys/go-template/internal/app/config:
     config:
-      dir: "mocks/app/config"
-#### api
-  github.com/beabys/go-template/internal/api:
+      dir: mocks/app/config
+      filename: "{{.InterfaceName}}.go"
+  github.com/beabys/go-template/internal/application/example/repository:
     config:
-      dir: "mocks/api"
-  github.com/beabys/go-template/internal/api/v1:
+      dir: mocks/application/repository
+      filename: "{{.InterfaceName}}.go"
+  github.com/beabys/go-template/internal/application/example/handler:
     config:
-      dir: "mocks/api/v1"
-#### hello_world
-  github.com/beabys/go-template/internal/hello_world:
-    config:
-      dir: "mocks/hello_world"
-  github.com/beabys/go-template/internal/hello_world/repository:
-    config:
-      dir: "mocks/hello_world/repository"
-      
+      dir: mocks/application/handler
+      filename: "{{.InterfaceName}}.go"

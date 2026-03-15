@@ -9,10 +9,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/beabys/go-template/internal/api"
 	"github.com/beabys/go-template/internal/app/config"
-	helloworld "github.com/beabys/go-template/internal/hello_world"
-	"github.com/beabys/go-template/internal/hello_world/repository"
+	"github.com/beabys/go-template/internal/application/example/handler"
+	grpcdapter "github.com/beabys/go-template/internal/infrastructure/adapters/grpc"
+	httpadapter "github.com/beabys/go-template/internal/infrastructure/adapters/http"
+	"github.com/beabys/go-template/internal/infrastructure/persistence/repository"
 	"github.com/beabys/go-template/internal/utils"
 	"github.com/beabys/go-template/pkg/database"
 	"github.com/beabys/go-template/pkg/logger"
@@ -22,14 +23,13 @@ import (
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	grpc_logging "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
-	"google.golang.org/grpc"
+	grpclib "google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 
 	hwproto "github.com/beabys/go-template/proto/gen/go/hello_world/v1"
 )
 
-// New returns a new App struct
 func New() *App {
 	return &App{}
 }
@@ -55,10 +55,6 @@ func (app *App) SetMysqlClient(m database.Database) {
 	app.MysqlClient = m
 }
 
-// func (app *App) SetRedisClient(r *database.Redis) {
-// 	app.RedisClient = r
-// }
-
 func (app *App) Setup(configs config.AppConfig) error {
 	err := app.SetConfigs(configs)
 	if err != nil {
@@ -67,16 +63,13 @@ func (app *App) Setup(configs config.AppConfig) error {
 
 	config := app.Config.GetConfigs()
 
-	// Logger
 	logger, err := logger.NewZapLogger([]string{}, []string{}, zap.DebugLevel)
-	// logger, err := logger.NewSlogLogger("debug")
 	if err != nil {
 		return err
 	}
 
 	app.SetLogger(logger)
 
-	// Mysql Client
 	mysqlConfig := &database.MysqlConfig{
 		Username:        config.DB.Username,
 		Password:        config.DB.Password,
@@ -92,33 +85,20 @@ func (app *App) Setup(configs config.AppConfig) error {
 
 	app.SetMysqlClient(mysql)
 
-	// //Redis
-	// redisConfig := &database.RedisConfig{
-	// 	Host:     config.Redis.Host,
-	// 	Password: config.Redis.Password,
-	// 	Port:     config.Redis.Port,
-	// 	DBNumber: config.Redis.DBNumber,
-	// }
-	// redis := database.NewRedis(redisConfig)
-	// app.SetRedisClient(redis)
-
 	return nil
 }
 
 func (a *App) SetHTTPServer() error {
-
-	// init service dependencies here
-	helloWorldRepository := repository.NewHelloRepository(a.Logger, a.MysqlClient)
-	helloWorldService := helloworld.NewHelloWorld(a.Logger, helloWorldRepository)
+	exampleRepository := repository.NewHelloWorldRepository(a.Logger, a.MysqlClient)
+	exampleService := handler.NewExampleService(a.Logger, exampleRepository)
 
 	configs := a.Config.GetConfigs()
-	server := api.NewHttpServer().
+	server := httpadapter.NewHttpServer().
 		SetConfig(configs).
 		SetLogger(a.Logger).
-		// TODO this should be changes according new implementations
-		SetHelloWorldService(helloWorldService)
+		SetExampleService(exampleService)
 
-	h, err := api.NewMuxHandler(server)
+	h, err := httpadapter.NewMuxHandler(server)
 	if err != nil {
 		return err
 	}
@@ -128,9 +108,8 @@ func (a *App) SetHTTPServer() error {
 	a.Logger.Info("setup http server ", logger.LogField{Key: "address", Value: address})
 
 	server.Server = &http.Server{
-		Addr:    address,
-		Handler: h,
-		// by default set ReadHeaderTimeout to 0.5 secs.
+		Addr:              address,
+		Handler:           h,
 		ReadHeaderTimeout: time.Duration(time.Second / 2),
 	}
 
@@ -140,9 +119,8 @@ func (a *App) SetHTTPServer() error {
 }
 
 func (a *App) SetGRPCServer() error {
-	// init service dependencies here
-	helloWorldRepository := repository.NewHelloRepository(a.Logger, a.MysqlClient)
-	helloWorldService := helloworld.NewHelloWorld(a.Logger, helloWorldRepository)
+	exampleRepository := repository.NewHelloWorldRepository(a.Logger, a.MysqlClient)
+	exampleService := handler.NewExampleService(a.Logger, exampleRepository)
 
 	configs := a.Config.GetConfigs()
 	address := ":" + strconv.Itoa(configs.Grpc.Port)
@@ -150,39 +128,32 @@ func (a *App) SetGRPCServer() error {
 	if err != nil {
 		return utils.BindError(errors.New("failed to get grpc listener"), err)
 	}
-	server := api.NewGRPCServer().
+	server := grpcdapter.NewGRPCServer().
 		SetConfig(configs).
 		SetLogger(a.Logger).
+		SetExampleService(exampleService)
 
-		// TODO this should be changes according new implementations
-		SetHelloWorldService(helloWorldService)
-
-	// Set up the gRPC server with interceptors
-
-	// recoveryOpt is used to recover from panics in gRPC handlers
 	recoveryOpt := grpc_recovery.WithRecoveryHandler(func(p interface{}) (err error) {
 		a.Logger.Error("panic recovered", err)
 		return err
 	})
-	// get logger and create new entry for grpcLogger
 	logs := a.Logger.GetLogger()
 	opts := []grpc_logging.Option{
 		grpc_logging.WithLogOnEvents(grpc_logging.StartCall, grpc_logging.FinishCall),
-		// Add any other option (check functions starting with logging.With).
 	}
 
-	rpcServer := grpc.NewServer(
-		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
+	rpcServer := grpclib.NewServer(
+		grpclib.StreamInterceptor(grpc_middleware.ChainStreamServer(
 			grpc_ctxtags.StreamServerInterceptor(),
 			grpc_logging.StreamServerInterceptor(logger.InterceptorLogger(logs), opts...),
 			grpc_recovery.StreamServerInterceptor(recoveryOpt),
 		)),
-		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+		grpclib.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 			grpc_ctxtags.UnaryServerInterceptor(),
 			grpc_logging.UnaryServerInterceptor(logger.InterceptorLogger(logs), opts...),
 			grpc_recovery.UnaryServerInterceptor(recoveryOpt),
 		)),
-		grpc.KeepaliveEnforcementPolicy(keepalive.EnforcementPolicy{
+		grpclib.KeepaliveEnforcementPolicy(keepalive.EnforcementPolicy{
 			MinTime:             5 * time.Second,
 			PermitWithoutStream: true,
 		}),
@@ -199,8 +170,6 @@ func (a *App) SetGRPCServer() error {
 	return nil
 }
 
-// Recoverer is a recover function that allow restart the service
-// log the error and the stack trace
 func (app *App) Recoverer(fn func()) {
 	defer func() {
 		if r := recover(); r != nil {

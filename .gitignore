@@ -24,3 +24,9 @@ config.yaml
 # TEST
 .testCoverage.txt
 unit.html
+
+# AI
+skills-lock.json
+/.agents
+/.opencode
+/docs

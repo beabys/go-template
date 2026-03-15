@@ -1,46 +1,46 @@
-package api
+package http
 
 import (
 	"context"
-	"errors"
 	"net/http"
-	"time"
 
 	"github.com/beabys/go-template/internal/app/config"
-	helloworld "github.com/beabys/go-template/internal/hello_world"
+	"github.com/beabys/go-template/internal/application/example/handler"
 	"github.com/beabys/go-template/pkg/logger"
 	"golang.org/x/sync/errgroup"
 )
 
-// NewHttpServer returns a new pointer of HttpServer
+type HttpServer struct {
+	Server         *http.Server
+	Config         *config.Config
+	Logger         logger.Logger
+	ExampleService handler.ExampleServiceHandler
+}
+
 func NewHttpServer() *HttpServer {
 	return &HttpServer{}
 }
 
-// SetConfig is a setter function to set Configs
 func (hs *HttpServer) SetConfig(c *config.Config) *HttpServer {
 	hs.Config = c
 	return hs
 }
 
-// SetLogger is a setter function to set the Logger
 func (hs *HttpServer) SetLogger(l logger.Logger) *HttpServer {
 	hs.Logger = l
 	return hs
 }
 
-// SetHelloWorldService is a setter function to set the Logger
-func (hs *HttpServer) SetHelloWorldService(hw helloworld.HelloWorldIntereface) *HttpServer {
-	hs.HelloWorldSvc = hw
+func (hs *HttpServer) SetExampleService(svc handler.ExampleServiceHandler) *HttpServer {
+	hs.ExampleService = svc
 	return hs
 }
 
-// Run implements Run api server function for Http server
 func (hs *HttpServer) Run(ctx context.Context, wg *errgroup.Group) {
 	wg.Go(func() error {
 		hs.Logger.Info("http server started")
 		if err := hs.Server.ListenAndServe(); err != nil {
-			if errors.Is(err, http.ErrServerClosed) {
+			if err == http.ErrServerClosed {
 				return nil
 			}
 			hs.Logger.Error("http server stopped with error", err)
@@ -52,7 +52,7 @@ func (hs *HttpServer) Run(ctx context.Context, wg *errgroup.Group) {
 	wg.Go(func() error {
 		<-ctx.Done()
 		hs.Logger.Info("shutting down gracefully http server")
-		ctxTimeout, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		ctxTimeout, cancel := context.WithTimeout(context.Background(), 5)
 		defer cancel()
 		if err := hs.Server.Shutdown(ctxTimeout); err != nil {
 			hs.Logger.Error("error shutting server down", err)

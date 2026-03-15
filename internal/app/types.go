@@ -3,8 +3,9 @@ package app
 import (
 	"context"
 
-	"github.com/beabys/go-template/internal/api"
 	"github.com/beabys/go-template/internal/app/config"
+	grpcdapter "github.com/beabys/go-template/internal/infrastructure/adapters/grpc"
+	httpadapter "github.com/beabys/go-template/internal/infrastructure/adapters/http"
 	"github.com/beabys/go-template/pkg/database"
 	"github.com/beabys/go-template/pkg/logger"
 )
@@ -22,6 +23,6 @@ type App struct {
 	Logger      logger.Logger
 	MysqlClient database.Database
 	RedisClient database.Database
-	HttpServer  api.ApiServer
-	GrpcServer  api.ApiServer
+	HttpServer  *httpadapter.HttpServer
+	GrpcServer  *grpcdapter.GRPCServer
 }

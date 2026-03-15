@@ -1,4 +1,4 @@
-package api
+package http
 
 import (
 	"net/http"
@@ -8,6 +8,10 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/prometheus/client_golang/prometheus"
 )
+
+type PrometheusMetrics struct {
+	latency *prometheus.SummaryVec
+}
 
 func NewPrometheusMetrics() *PrometheusMetrics {
 	latency := prometheus.NewSummaryVec(
@@ -43,7 +47,6 @@ func middlewareMetrics(log logger.Logger, p *PrometheusMetrics) func(http.Handle
 					logger.LogField{Key: "status", Value: ww.Status()},
 					logger.LogField{Key: "latency", Value: elapsed},
 					logger.LogField{Key: "bytes", Value: ww.BytesWritten()},
-					logger.LogField{Key: "latency", Value: elapsed},
 				)
 			}()
 
