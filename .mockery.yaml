@@ -2,19 +2,15 @@ all: true
 structname: '{{.InterfaceName}}'
 template: testify
 packages:
-  github.com/beabys/go-template/internal/app:
+  github.com/beabys/go-template/internal/app/ports:
     config:
-      dir: mocks/app
+      dir: mocks/ports
       filename: "{{.InterfaceName}}.go"
-  github.com/beabys/go-template/internal/app/config:
+  github.com/beabys/go-template/internal/application/example/usecase:
     config:
-      dir: mocks/app/config
+      dir: mocks/application/usecase
       filename: "{{.InterfaceName}}.go"
   github.com/beabys/go-template/internal/application/example/repository:
     config:
       dir: mocks/application/repository
-      filename: "{{.InterfaceName}}.go"
-  github.com/beabys/go-template/internal/application/example/handler:
-    config:
-      dir: mocks/application/handler
       filename: "{{.InterfaceName}}.go"

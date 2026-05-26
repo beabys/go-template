@@ -7,7 +7,7 @@ import (
 	"syscall"
 
 	"github.com/beabys/go-template/internal/app"
-	"github.com/beabys/go-template/internal/app/config"
+	"github.com/beabys/go-template/pkg/config"
 	"github.com/beabys/go-template/pkg/logger"
 	"golang.org/x/sync/errgroup"
 )

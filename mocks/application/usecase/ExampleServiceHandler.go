@@ -2,7 +2,7 @@
 // github.com/vektra/mockery
 // template: testify
 
-package handler
+package usecase
 
 import (
 	"context"
@@ -72,15 +72,26 @@ type ExampleServiceHandler_GetHelloWorld_Call struct {
 }
 
 // GetHelloWorld is a helper method to define mock.On call
-//   - ctx
-//   - req
+//   - ctx context.Context
+//   - req *command.GetHelloWorldRequest
 func (_e *ExampleServiceHandler_Expecter) GetHelloWorld(ctx interface{}, req interface{}) *ExampleServiceHandler_GetHelloWorld_Call {
 	return &ExampleServiceHandler_GetHelloWorld_Call{Call: _e.mock.On("GetHelloWorld", ctx, req)}
 }
 
 func (_c *ExampleServiceHandler_GetHelloWorld_Call) Run(run func(ctx context.Context, req *command.GetHelloWorldRequest)) *ExampleServiceHandler_GetHelloWorld_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(*command.GetHelloWorldRequest))
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *command.GetHelloWorldRequest
+		if args[1] != nil {
+			arg1 = args[1].(*command.GetHelloWorldRequest)
+		}
+		run(
+			arg0,
+			arg1,
+		)
 	})
 	return _c
 }

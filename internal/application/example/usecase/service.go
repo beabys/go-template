@@ -1,22 +1,14 @@
-package handler
+package usecase
 
 import (
 	"context"
 	"errors"
-	"time"
 
 	"github.com/beabys/go-template/internal/application/example/command"
 	"github.com/beabys/go-template/internal/application/example/repository"
 	"github.com/beabys/go-template/internal/domain/example/model"
 	"github.com/beabys/go-template/pkg/logger"
 )
-
-const defaultTimeout = 5 * time.Second
-
-type ExampleService struct {
-	logger     logger.Logger
-	repository repository.HelloWorldRepository
-}
 
 func NewExampleService(logger logger.Logger, repository repository.HelloWorldRepository) *ExampleService {
 	return &ExampleService{
@@ -35,7 +27,11 @@ func (s *ExampleService) GetHelloWorld(ctx context.Context, req *command.GetHell
 
 	s.logger.Info("getting hello world")
 
-	helloWorld := model.NewHelloWorld("Hello, World!")
+	helloWorld, err := model.NewHelloWorld("Hello, World!")
+	if err != nil {
+		s.logger.Error("failed to create hello world", err)
+		return nil, err
+	}
 
 	if err := s.repository.SaveHelloWorld(ctx, helloWorld); err != nil {
 		s.logger.Error("failed to save hello world", err)

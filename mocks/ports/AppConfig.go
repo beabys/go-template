@@ -2,10 +2,10 @@
 // github.com/vektra/mockery
 // template: testify
 
-package config
+package ports
 
 import (
-	"github.com/beabys/go-template/internal/app/config"
+	"github.com/beabys/go-template/pkg/config"
 	mock "github.com/stretchr/testify/mock"
 )
 

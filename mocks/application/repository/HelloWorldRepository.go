@@ -72,15 +72,26 @@ type HelloWorldRepository_GetHelloWorld_Call struct {
 }
 
 // GetHelloWorld is a helper method to define mock.On call
-//   - ctx
-//   - id
+//   - ctx context.Context
+//   - id model.HelloWorldID
 func (_e *HelloWorldRepository_Expecter) GetHelloWorld(ctx interface{}, id interface{}) *HelloWorldRepository_GetHelloWorld_Call {
 	return &HelloWorldRepository_GetHelloWorld_Call{Call: _e.mock.On("GetHelloWorld", ctx, id)}
 }
 
 func (_c *HelloWorldRepository_GetHelloWorld_Call) Run(run func(ctx context.Context, id model.HelloWorldID)) *HelloWorldRepository_GetHelloWorld_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(model.HelloWorldID))
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 model.HelloWorldID
+		if args[1] != nil {
+			arg1 = args[1].(model.HelloWorldID)
+		}
+		run(
+			arg0,
+			arg1,
+		)
 	})
 	return _c
 }
@@ -118,15 +129,26 @@ type HelloWorldRepository_SaveHelloWorld_Call struct {
 }
 
 // SaveHelloWorld is a helper method to define mock.On call
-//   - ctx
-//   - helloWorld
+//   - ctx context.Context
+//   - helloWorld *model.HelloWorld
 func (_e *HelloWorldRepository_Expecter) SaveHelloWorld(ctx interface{}, helloWorld interface{}) *HelloWorldRepository_SaveHelloWorld_Call {
 	return &HelloWorldRepository_SaveHelloWorld_Call{Call: _e.mock.On("SaveHelloWorld", ctx, helloWorld)}
 }
 
 func (_c *HelloWorldRepository_SaveHelloWorld_Call) Run(run func(ctx context.Context, helloWorld *model.HelloWorld)) *HelloWorldRepository_SaveHelloWorld_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(*model.HelloWorld))
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *model.HelloWorld
+		if args[1] != nil {
+			arg1 = args[1].(*model.HelloWorld)
+		}
+		run(
+			arg0,
+			arg1,
+		)
 	})
 	return _c
 }

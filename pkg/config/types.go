@@ -1,10 +1,5 @@
 package config
 
-type AppConfig interface {
-	LoadConfigs() error
-	GetConfigs() *Config
-}
-
 // Config is a struct define configuration for the app
 type Config struct {
 	Stage string   `mapstructure:"stage"`

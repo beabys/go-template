@@ -5,9 +5,9 @@ import (
 	"errors"
 	"net"
 
-	"github.com/beabys/go-template/internal/app/config"
 	"github.com/beabys/go-template/internal/application/example/command"
-	"github.com/beabys/go-template/internal/application/example/handler"
+	"github.com/beabys/go-template/internal/application/example/usecase"
+	"github.com/beabys/go-template/pkg/config"
 	"github.com/beabys/go-template/pkg/logger"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
@@ -21,7 +21,7 @@ type GRPCServer struct {
 	Listener       net.Listener
 	Config         *config.Config
 	Logger         logger.Logger
-	ExampleService handler.ExampleServiceHandler
+	ExampleService usecase.ExampleServiceHandler
 }
 
 func NewGRPCServer() *GRPCServer {
@@ -38,7 +38,7 @@ func (gs *GRPCServer) SetLogger(l logger.Logger) *GRPCServer {
 	return gs
 }
 
-func (gs *GRPCServer) SetExampleService(svc handler.ExampleServiceHandler) *GRPCServer {
+func (gs *GRPCServer) SetExampleService(svc usecase.ExampleServiceHandler) *GRPCServer {
 	gs.ExampleService = svc
 	return gs
 }
