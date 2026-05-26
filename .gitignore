@@ -30,3 +30,6 @@ skills-lock.json
 /.agents
 /.opencode
 /docs
+/graphify-out
+AGENTS.md
+rspec.xml

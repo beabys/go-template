@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/beabys/go-template/internal/app/config"
-	"github.com/beabys/go-template/internal/application/example/handler"
+	"github.com/beabys/go-template/internal/application/example/usecase"
+	"github.com/beabys/go-template/pkg/config"
 	"github.com/beabys/go-template/pkg/logger"
 	"golang.org/x/sync/errgroup"
 )
@@ -14,7 +14,7 @@ type HttpServer struct {
 	Server         *http.Server
 	Config         *config.Config
 	Logger         logger.Logger
-	ExampleService handler.ExampleServiceHandler
+	ExampleService usecase.ExampleServiceHandler
 }
 
 func NewHttpServer() *HttpServer {
@@ -31,7 +31,7 @@ func (hs *HttpServer) SetLogger(l logger.Logger) *HttpServer {
 	return hs
 }
 
-func (hs *HttpServer) SetExampleService(svc handler.ExampleServiceHandler) *HttpServer {
+func (hs *HttpServer) SetExampleService(svc usecase.ExampleServiceHandler) *HttpServer {
 	hs.ExampleService = svc
 	return hs
 }

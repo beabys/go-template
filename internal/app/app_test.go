@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/beabys/go-template/internal/app/config"
-	mockconfig "github.com/beabys/go-template/mocks/app/config"
+	mockports "github.com/beabys/go-template/mocks/ports"
+	"github.com/beabys/go-template/pkg/config"
 	"github.com/beabys/go-template/pkg/logger"
 	"go.uber.org/zap"
 
@@ -22,7 +22,7 @@ func TestApp(t *testing.T) {
 
 	t.Run("test fail Set configs", func(t *testing.T) {
 		app := New()
-		mockConfigs := mockconfig.NewAppConfig(t)
+		mockConfigs := mockports.NewAppConfig(t)
 		mockConfigs.On("LoadConfigs").Return(fmt.Errorf("fails"))
 		err := app.SetConfigs(mockConfigs)
 		assert.ErrorContains(t, err, "fails")
@@ -30,7 +30,7 @@ func TestApp(t *testing.T) {
 
 	t.Run("test Success Set configs", func(t *testing.T) {
 		app := New()
-		mockConfigs := mockconfig.NewAppConfig(t)
+		mockConfigs := mockports.NewAppConfig(t)
 		mockConfigs.On("LoadConfigs").Return(nil)
 		err := app.SetConfigs(mockConfigs)
 		assert.NoError(t, err)
@@ -45,14 +45,14 @@ func TestApp(t *testing.T) {
 	})
 	t.Run("test fail Setup", func(t *testing.T) {
 		app := New()
-		mockConfig := mockconfig.NewAppConfig(t)
+		mockConfig := mockports.NewAppConfig(t)
 		mockConfig.On("LoadConfigs").Return(fmt.Errorf("make it fail"))
 		assert.ErrorContains(t, app.Setup(mockConfig), "make it fail")
 	})
 
 	t.Run("test Success Setup", func(t *testing.T) {
 		app := New()
-		mockConfig := mockconfig.NewAppConfig(t)
+		mockConfig := mockports.NewAppConfig(t)
 		mockConfig.On("LoadConfigs").Return(nil)
 		mockConfig.On("GetConfigs").Return(&config.Config{})
 		assert.NoError(t, app.Setup(mockConfig))

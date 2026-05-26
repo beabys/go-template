@@ -9,20 +9,18 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/beabys/go-template/internal/app/config"
-	"github.com/beabys/go-template/internal/application/example/handler"
+	"github.com/beabys/go-template/internal/app/ports"
+	"github.com/beabys/go-template/internal/application/example/usecase"
 	grpcdapter "github.com/beabys/go-template/internal/infrastructure/adapters/grpc"
 	httpadapter "github.com/beabys/go-template/internal/infrastructure/adapters/http"
 	"github.com/beabys/go-template/internal/infrastructure/persistence/repository"
 	"github.com/beabys/go-template/internal/utils"
 	"github.com/beabys/go-template/pkg/database"
 	"github.com/beabys/go-template/pkg/logger"
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"go.uber.org/zap"
 
-	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
-	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	grpc_logging "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	grpclib "google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
@@ -34,7 +32,7 @@ func New() *App {
 	return &App{}
 }
 
-func (app *App) SetConfigs(AppConfig config.AppConfig) error {
+func (app *App) SetConfigs(AppConfig ports.AppConfig) error {
 	app.Config = AppConfig
 	err := AppConfig.LoadConfigs()
 	if err != nil {
@@ -55,7 +53,7 @@ func (app *App) SetMysqlClient(m database.Database) {
 	app.MysqlClient = m
 }
 
-func (app *App) Setup(configs config.AppConfig) error {
+func (app *App) Setup(configs ports.AppConfig) error {
 	err := app.SetConfigs(configs)
 	if err != nil {
 		return err
@@ -90,7 +88,7 @@ func (app *App) Setup(configs config.AppConfig) error {
 
 func (a *App) SetHTTPServer() error {
 	exampleRepository := repository.NewHelloWorldRepository(a.Logger, a.MysqlClient)
-	exampleService := handler.NewExampleService(a.Logger, exampleRepository)
+	exampleService := usecase.NewExampleService(a.Logger, exampleRepository)
 
 	configs := a.Config.GetConfigs()
 	server := httpadapter.NewHttpServer().
@@ -120,7 +118,7 @@ func (a *App) SetHTTPServer() error {
 
 func (a *App) SetGRPCServer() error {
 	exampleRepository := repository.NewHelloWorldRepository(a.Logger, a.MysqlClient)
-	exampleService := handler.NewExampleService(a.Logger, exampleRepository)
+	exampleService := usecase.NewExampleService(a.Logger, exampleRepository)
 
 	configs := a.Config.GetConfigs()
 	address := ":" + strconv.Itoa(configs.Grpc.Port)
@@ -143,16 +141,14 @@ func (a *App) SetGRPCServer() error {
 	}
 
 	rpcServer := grpclib.NewServer(
-		grpclib.StreamInterceptor(grpc_middleware.ChainStreamServer(
-			grpc_ctxtags.StreamServerInterceptor(),
+		grpclib.ChainStreamInterceptor(
 			grpc_logging.StreamServerInterceptor(logger.InterceptorLogger(logs), opts...),
 			grpc_recovery.StreamServerInterceptor(recoveryOpt),
-		)),
-		grpclib.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
-			grpc_ctxtags.UnaryServerInterceptor(),
+		),
+		grpclib.ChainUnaryInterceptor(
 			grpc_logging.UnaryServerInterceptor(logger.InterceptorLogger(logs), opts...),
 			grpc_recovery.UnaryServerInterceptor(recoveryOpt),
-		)),
+		),
 		grpclib.KeepaliveEnforcementPolicy(keepalive.EnforcementPolicy{
 			MinTime:             5 * time.Second,
 			PermitWithoutStream: true,
